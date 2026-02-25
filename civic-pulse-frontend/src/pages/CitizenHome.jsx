@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { AlertCircle, Sparkles, Rocket, TrendingUp, Zap } from 'lucide-react'
+import React, { useState } from 'react'
+import { AlertCircle, MapPin } from 'lucide-react'
 import ImageUpload from '../components/citizen/ImageUpload'
 import LocationDetector from '../components/citizen/LocationDetetctor'
 import SuccessModal from '../components/shared/SuccessModal'
@@ -9,6 +9,10 @@ import RecentResolutions from '../components/citizen/RecentResolutions'
 import FeaturesShowcase from '../components/citizen/FeaturesShowcase'
 import FAQ from '../components/citizen/FAQ'
 import CTASection from '../components/citizen/CTASection'
+import Card from '../components/shared/Card'
+import Button from '../components/shared/Button'
+import InputField from '../components/shared/InputField'
+import SectionHeader from '../components/shared/SectionHeader'
 
 function CitizenHome() {
   const [formData, setFormData] = useState({
@@ -22,30 +26,6 @@ function CitizenHome() {
   const [showSuccess, setShowSuccess] = useState(false)
   const [generatedId, setGeneratedId] = useState('')
   const [errors, setErrors] = useState({})
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-  const [scrollY, setScrollY] = useState(0)
-
-  // Mouse parallax effect
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      setMousePosition({
-        x: (e.clientX / window.innerWidth - 0.5) * 20,
-        y: (e.clientY / window.innerHeight - 0.5) * 20
-      })
-    }
-
-    const handleScroll = () => {
-      setScrollY(window.scrollY)
-    }
-
-    window.addEventListener('mousemove', handleMouseMove)
-    window.addEventListener('scroll', handleScroll)
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove)
-      window.removeEventListener('scroll', handleScroll)
-    }
-  }, [])
 
   const handleInputChange = (e) => {
     setFormData({
@@ -138,313 +118,396 @@ function CitizenHome() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Animated Background with Parallax */}
-      <div className="fixed inset-0 -z-10">
-        {/* Base gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-50 via-green-50 to-emerald-100"></div>
-        
-        {/* Floating shapes with parallax */}
-        <div 
-          className="absolute top-20 left-10 w-72 h-72 bg-primary-200/30 rounded-full blur-3xl"
-          style={{
-            transform: `translate(${mousePosition.x}px, ${mousePosition.y}px) translateY(${scrollY * 0.2}px)`
-          }}
-        ></div>
-        <div 
-          className="absolute bottom-20 right-10 w-96 h-96 bg-green-200/30 rounded-full blur-3xl"
-          style={{
-            transform: `translate(${-mousePosition.x}px, ${-mousePosition.y}px) translateY(${scrollY * 0.3}px)`
-          }}
-        ></div>
-        <div 
-          className="absolute top-1/2 left-1/2 w-64 h-64 bg-emerald-200/20 rounded-full blur-3xl"
-          style={{
-            transform: `translate(-50%, -50%) translate(${mousePosition.x * 0.5}px, ${mousePosition.y * 0.5}px)`
-          }}
-        ></div>
-
-        {/* Grid pattern overlay */}
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, rgba(34, 197, 94, 0.1) 1px, transparent 0)`,
-          backgroundSize: '40px 40px'
-        }}></div>
-      </div>
-
-      {/* Hero Section */}
-      <div className="relative py-20">
-        <div className="container mx-auto px-4">
-          {/* Floating badges */}
-          <div className="absolute top-10 right-10 hidden lg:block">
-            <div className="glass px-6 py-3 rounded-full shadow-lg animate-float-smooth">
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full pulse-glow"></div>
-                <span className="text-sm font-semibold text-primary-700">Live System</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Hero Content with 3D effect */}
-          <div className="text-center mb-20 relative">
-            {/* Announcement Badge */}
-            <div className="inline-flex items-center space-x-3 glass px-8 py-4 rounded-full shadow-xl mb-8 hover-lift hover-bounce group cursor-pointer">
-              <Rocket className="w-6 h-6 text-primary-600 group-hover:rotate-12 transition-transform" />
-              <span className="text-sm font-bold bg-gradient-to-r from-primary-600 to-green-600 bg-clip-text text-transparent">
-                Making Cities Smarter, One Report at a Time
-              </span>
-              <Sparkles className="w-5 h-5 text-yellow-500 animate-pulse" />
-            </div>
-            
-            {/* Main Title with shimmer effect */}
-            <h1 className="text-6xl md:text-7xl lg:text-8xl font-black mb-8 leading-tight">
-              <span className="block text-gray-800 mb-2">Report Issues.</span>
-              <span className="block text-shimmer">Get Results.</span>
-            </h1>
-            
-            {/* Subtitle with gradient */}
-            <p className="text-xl md:text-2xl text-gray-700 max-w-4xl mx-auto leading-relaxed mb-12">
-              Join <span className="font-bold text-primary-600">10,000+ citizens</span> transforming 
-              our city through <span className="font-bold text-primary-600">real-time civic engagement</span>. 
-              Your voice matters, and we're here to amplify it.
-            </p>
-
-            {/* CTA Buttons with advanced hover */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-              <a
-                href="#submit-form"
-                className="group relative px-10 py-5 bg-gradient-to-r from-primary-600 via-primary-500 to-green-500 text-white rounded-2xl font-bold text-lg shadow-2xl hover:shadow-glow-lg transform hover:scale-105 transition-all duration-500 overflow-hidden"
-              >
-                <span className="relative z-10 flex items-center space-x-3">
-                  <Zap className="w-6 h-6 group-hover:rotate-12 transition-transform" />
-                  <span>Submit Complaint Now</span>
-                </span>
-                {/* Animated gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-              </a>
-              
-              <a
-                href="#how-it-works"
-                className="px-10 py-5 glass border-2 border-primary-300 text-primary-700 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 hover-bounce"
-              >
-                See How It Works
-              </a>
-            </div>
-
-            {/* Trust indicators */}
-            <div className="mt-16 flex flex-wrap items-center justify-center gap-12">
-              <div className="text-center group">
-                <div className="text-4xl font-black text-primary-600 mb-1 group-hover:scale-110 transition-transform">
-                  98%
-                </div>
-                <div className="text-sm text-gray-600 font-medium">Success Rate</div>
-              </div>
-              <div className="w-px h-12 bg-gray-300"></div>
-              <div className="text-center group">
-                <div className="text-4xl font-black text-primary-600 mb-1 group-hover:scale-110 transition-transform">
-                  24h
-                </div>
-                <div className="text-sm text-gray-600 font-medium">Avg Response</div>
-              </div>
-              <div className="w-px h-12 bg-gray-300"></div>
-              <div className="text-center group">
-                <div className="text-4xl font-black text-primary-600 mb-1 group-hover:scale-110 transition-transform">
-                  10K+
-                </div>
-                <div className="text-sm text-gray-600 font-medium">Issues Resolved</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Enhanced Form Section */}
-          <div className="max-w-5xl mx-auto mb-20" id="submit-form">
-            <div className="relative">
-              {/* Glowing border effect */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-primary-600 via-green-500 to-emerald-600 rounded-3xl blur opacity-20 group-hover:opacity-30 transition duration-1000"></div>
-              
-              <div className="relative glass p-12 rounded-3xl shadow-2xl">
-                {/* Form Header */}
-                <div className="flex items-center justify-between mb-10">
-                  <div className="flex items-center space-x-4">
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary-500 to-green-500 rounded-2xl blur-lg opacity-50"></div>
-                      <div className="relative bg-gradient-to-br from-primary-600 to-green-600 p-4 rounded-2xl shadow-xl">
-                        <AlertCircle className="w-8 h-8 text-white" />
-                      </div>
-                    </div>
-                    <div>
-                      <h2 className="text-4xl font-black text-gray-800">
-                        Submit Complaint
-                      </h2>
-                      <p className="text-gray-600 font-medium">Fill out the form below to get started</p>
-                    </div>
+    <div className="min-h-screen bg-surface-50 px-3 py-8 sm:px-6 lg:px-10">
+      <div className="mx-auto w-full max-w-6xl overflow-hidden rounded-3xl border border-primary-100 bg-white shadow-[0_32px_120px_rgba(11,31,59,0.28)]">
+        {/* Gradient hero with civic-first layout in deep navy theme */}
+        <div className="bg-gradient-to-b from-primary-800 via-primary-700 to-primary-50">
+          <div className="px-5 pt-8 pb-10 sm:px-8 lg:px-12 lg:pb-14">
+            <div className="grid gap-10 lg:grid-cols-[1.6fr_minmax(0,1.4fr)] lg:items-stretch">
+              {/* Left hero: city signal strip */}
+              <div className="flex flex-col justify-between space-y-8 text-primary-50">
+                <div className="space-y-4">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-primary-900/40 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide">
+                    <span className="h-1.5 w-1.5 rounded-full bg-mint-300" />
+                    <span>Resident Issue Board</span>
                   </div>
-                  
-                  <div className="hidden md:block glass px-4 py-2 rounded-full">
-                    <div className="flex items-center space-x-2">
-                      <TrendingUp className="w-4 h-4 text-primary-600" />
-                      <span className="text-sm font-bold text-primary-700">Fast Track</span>
-                    </div>
+                  <div className="space-y-3">
+                    <p className="text-xs font-medium text-primary-100/80">
+                      One place for every pothole, blackout, and overflow across your city.
+                    </p>
+                    <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl lg:text-[3rem]">
+                      <span className="block">Your Town.</span>
+                      <span className="block text-mint-200">Perfected in public.</span>
+                    </h1>
+                    <p className="max-w-lg text-sm sm:text-base text-primary-100/90">
+                      Civic Pulse connects you straight to maintenance teams—no paperwork, no
+                      switchboard, just clear reports and visible follow‑through.
+                    </p>
                   </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-8">
-                  {/* Complaint Type - Enhanced */}
-                  <div className="group">
-                    <label className="flex items-center space-x-2 text-sm font-black text-gray-700 mb-4 uppercase tracking-wide">
-                      <span>Complaint Type</span>
-                      <span className="text-red-500">*</span>
-                      <span className="px-2 py-1 bg-red-100 text-red-600 rounded text-xs font-bold">Required</span>
-                    </label>
-                    <div className="relative">
-                      <select 
-                        name="complaintType"
-                        value={formData.complaintType}
-                        onChange={handleInputChange}
-                        className={`w-full px-6 py-5 text-lg border-3 rounded-2xl focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-300 font-semibold appearance-none cursor-pointer ${
-                          errors.complaintType 
-                            ? 'border-red-400 bg-red-50' 
-                            : 'border-gray-200 hover:border-primary-400 bg-white group-hover:shadow-lg'
-                        }`}
-                      >
-                        <option value="">Choose a category...</option>
-                        <option value="pothole">🕳️ Pothole - Road Damage</option>
-                        <option value="streetlight">💡 Streetlight - Not Working</option>
-                        <option value="garbage">🗑️ Garbage - Collection Issue</option>
-                        <option value="water">💧 Water - Supply Problem</option>
-                        <option value="drainage">🌊 Drainage - Blockage</option>
-                        <option value="road">🛣️ Road - Maintenance Needed</option>
-                        <option value="other">📋 Other - Describe Below</option>
-                      </select>
-                      {/* Custom dropdown arrow */}
-                      <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none">
-                        <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </div>
-                    </div>
-                    {errors.complaintType && (
-                      <div className="mt-3 flex items-center space-x-2 text-red-600 animate-slide-up">
-                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                        </svg>
-                        <span className="font-semibold">{errors.complaintType}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Description - Enhanced */}
-                  <div className="group">
-                    <label className="flex items-center space-x-2 text-sm font-black text-gray-700 mb-4 uppercase tracking-wide">
-                      <span>Description</span>
-                      <span className="text-red-500">*</span>
-                      <span className="px-2 py-1 bg-red-100 text-red-600 rounded text-xs font-bold">Required</span>
-                    </label>
-                    <div className="relative">
-                      <textarea
-                        name="description"
-                        value={formData.description}
-                        onChange={handleInputChange}
-                        rows="6"
-                        className={`w-full px-6 py-5 text-lg border-3 rounded-2xl focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-300 resize-none font-medium ${
-                          errors.description 
-                            ? 'border-red-400 bg-red-50' 
-                            : 'border-gray-200 hover:border-primary-400 bg-white group-hover:shadow-lg'
-                        }`}
-                        placeholder="💬 Tell us what's happening... Be as detailed as possible. Include the exact location, when you noticed it, and how it's affecting the community."
-                      ></textarea>
-                      {/* Character counter */}
-                      <div className="absolute bottom-4 right-4 text-xs font-semibold text-gray-400">
-                        {formData.description.length} characters
-                      </div>
-                    </div>
-                    {errors.description && (
-                      <div className="mt-3 flex items-center space-x-2 text-red-600 animate-slide-up">
-                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                        </svg>
-                        <span className="font-semibold">{errors.description}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Location Detector - Enhanced */}
-                  <LocationDetector 
-                    onLocationDetect={handleLocationDetect}
-                    latitude={formData.latitude}
-                    longitude={formData.longitude}
-                  />
-
-                  {/* Image Upload - Enhanced */}
-                  <ImageUpload 
-                    onImageSelect={handleImageSelect}
-                    selectedImage={formData.imagePreview}
-                  />
-                  {errors.image && (
-                    <div className="mt-3 flex items-center space-x-2 text-red-600 animate-slide-up">
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                      </svg>
-                      <span className="font-semibold">{errors.image}</span>
-                    </div>
-                  )}
-
-                  {/* Submit Button - Ultra Enhanced */}
-                  <div className="pt-6">
-                    <button
-                      type="submit"
-                      className="group relative w-full py-6 bg-gradient-to-r from-primary-600 via-green-500 to-emerald-600 text-white rounded-2xl font-black text-2xl shadow-2xl hover:shadow-glow-lg transform hover:scale-[1.02] transition-all duration-500 overflow-hidden"
+                <div className="space-y-4">
+                  <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm">
+                    <a
+                      href="#submit-form"
+                      className="inline-flex items-center justify-center rounded-full bg-white px-4 py-2 text-xs font-semibold text-primary-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:px-5 sm:py-2.5"
                     >
-                      <span className="relative z-10 flex items-center justify-center space-x-3">
-                        <Rocket className="w-7 h-7 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                        <span>Submit Complaint Now</span>
-                        <svg className="w-6 h-6 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg>
-                      </span>
-                      {/* Animated shimmer effect */}
-                      <div className="absolute inset-0 shimmer"></div>
-                    </button>
+                      Open a new ticket
+                    </a>
+                    <a
+                      href="#how-it-works"
+                      className="inline-flex items-center justify-center rounded-full border border-primary-200/70 bg-primary-900/10 px-4 py-2 text-xs font-semibold text-primary-50/90 backdrop-blur-sm transition hover:border-primary-100 sm:px-5 sm:py-2.5"
+                    >
+                      How the city uses this
+                    </a>
                   </div>
-                </form>
 
-                {/* Enhanced Info Box */}
-                <div className="mt-10 relative overflow-hidden rounded-2xl">
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-green-500 opacity-10"></div>
-                  <div className="relative flex items-start space-x-4 p-6 border-2 border-primary-200 rounded-2xl glass">
-                    <div className="flex-shrink-0">
-                      <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-green-500 rounded-xl flex items-center justify-center shadow-lg">
-                        <span className="text-2xl">💡</span>
-                      </div>
+                  {/* Unique civic strip row */}
+                  <div className="grid gap-3 text-[11px] text-primary-100/90 sm:grid-cols-3">
+                    <div className="rounded-2xl bg-primary-900/30 p-3">
+                      <p className="font-semibold">Street & traffic</p>
+                      <p className="mt-1 text-primary-100/85">
+                        Potholes, lights, signage, crossings – anything that shapes your route.
+                      </p>
                     </div>
-                    <div>
-                      <p className="font-black text-primary-900 mb-2 text-lg">Pro Tip for Faster Resolution</p>
-                      <p className="text-primary-800 leading-relaxed font-medium">
-                        After submitting, you'll receive a <span className="font-bold">unique tracking ID</span>. 
-                        Screenshot it or write it down! Most issues are resolved within 
-                        <span className="font-bold text-green-600"> 48-72 hours</span>. 
-                        High-priority cases get attention within <span className="font-bold text-red-600">24 hours</span>.
+                    <div className="rounded-2xl bg-primary-900/25 p-3">
+                      <p className="font-semibold">Clean & safe</p>
+                      <p className="mt-1 text-primary-100/85">
+                        Waste, flooding, vandalism, blocked drains, overflowing bins.
+                      </p>
+                    </div>
+                    <div className="rounded-2xl bg-primary-900/20 p-3">
+                      <p className="font-semibold">Public spaces</p>
+                      <p className="mt-1 text-primary-100/85">
+                        Parks, sidewalks, community facilities, shared infrastructure.
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
+
+              {/* Right hero: city lanes preview layered over real city image */}
+              <div className="flex items-stretch">
+                <div className="relative w-full overflow-hidden rounded-3xl">
+                  <img
+                    src="https://images.pexels.com/photos/313782/pexels-photo-313782.jpeg?auto=compress&cs=tinysrgb&w=1200"
+                    alt="Aerial view of city streets and blocks"
+                    className="absolute inset-0 h-full w-full object-cover opacity-80"
+                  />
+                  <div className="pointer-events-none absolute -left-6 -top-6 hidden h-20 w-36 rounded-2xl bg-white/40 blur-2xl sm:block" />
+                  <Card className="relative m-3 h-full bg-white/95 p-4 shadow-xl sm:p-5 lg:p-6">
+                    <div className="mb-4 flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-primary-600">
+                          City lanes
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          Sample view of how issues flow through departments.
+                        </p>
+                      </div>
+                      <span className="inline-flex items-center gap-1 rounded-full bg-mint-50 px-2 py-1 text-[10px] font-semibold text-primary-700">
+                        <span className="h-1.5 w-1.5 rounded-full bg-mint-300" />
+                        Live queue
+                      </span>
+                    </div>
+
+                    {/* Vertical lanes representing departments */}
+                    <div className="grid h-full gap-3 sm:grid-cols-3">
+                      <div className="flex flex-col rounded-2xl bg-slate-50 p-3">
+                        <p className="text-[11px] font-semibold text-slate-600">Streets</p>
+                        <div className="mt-2 flex-1 space-y-1.5 text-[11px]">
+                          <div className="flex items-center justify-between rounded-lg bg-white px-2 py-1.5">
+                            <span className="truncate pr-2">Pothole · Ward 3</span>
+                            <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+                          </div>
+                          <div className="flex items-center justify-between rounded-lg bg-white px-2 py-1.5">
+                            <span className="truncate pr-2">Broken zebra crossing</span>
+                            <span className="h-1.5 w-1.5 rounded-full bg-mint-300" />
+                          </div>
+                          <div className="flex items-center justify-between rounded-lg bg-white px-2 py-1.5">
+                            <span className="truncate pr-2">Sunken manhole</span>
+                            <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col rounded-2xl bg-slate-50 p-3">
+                        <p className="text-[11px] font-semibold text-slate-600">Utilities</p>
+                        <div className="mt-2 flex-1 space-y-1.5 text-[11px]">
+                          <div className="flex items-center justify-between rounded-lg bg-white px-2 py-1.5">
+                            <span className="truncate pr-2">Water leak · Block C</span>
+                            <span className="rounded-full bg-mint-50 px-2 py-0.5 text-[10px] font-semibold text-primary-700">
+                              Routed
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between rounded-lg bg-white px-2 py-1.5">
+                            <span className="truncate pr-2">Streetlight outage</span>
+                            <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
+                              Queue
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between rounded-lg bg-white px-2 py-1.5">
+                            <span className="truncate pr-2">Loose cable</span>
+                            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700">
+                              Logged
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col rounded-2xl bg-mint-50 p-3">
+                        <p className="text-[11px] font-semibold text-primary-800">Public spaces</p>
+                        <div className="mt-2 flex-1 space-y-1.5 text-[11px]">
+                          <div className="rounded-lg bg-white px-2 py-1.5">
+                            Riverside Park · litter build‑up
+                          </div>
+                          <div className="rounded-lg bg-white px-2 py-1.5">
+                            Playground gate won’t close
+                          </div>
+                          <div className="rounded-lg bg-white px-2 py-1.5">
+                            Tree blocking sidewalk
+                          </div>
+                        </div>
+                        <div className="mt-3 rounded-xl bg-primary-700 px-2.5 py-1.5 text-[10px] font-semibold text-mint-50">
+                          Your next report lands in one of these lanes.
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Main content area */}
+        <div className="bg-white px-5 pb-10 pt-8 sm:px-8 lg:px-12 lg:pb-12 lg:pt-10">
+          {/* Sub-header aligned with hero */}
+          <header className="mb-8 space-y-4">
+            <SectionHeader
+              eyebrow="New complaint"
+              title="Report an Issue"
+              subtitle="Log a civic issue in under two minutes so your city can triage, prioritize, and resolve it with full transparency."
+              align="left"
+            />
+            <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-slate-500">
+              <div className="inline-flex items-center gap-2 rounded-full bg-primary-700/5 px-3 py-1">
+                <span className="h-1.5 w-1.5 rounded-full bg-mint-300" />
+                <span className="font-medium text-primary-700">Secure, city-grade platform</span>
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1">
+                <AlertCircle className="h-3.5 w-3.5 text-slate-500" />
+                <span>Track every report with a unique ID</span>
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1">
+                <MapPin className="h-3.5 w-3.5 text-primary-600" />
+                <span>Smart location detection for precise routing</span>
+              </div>
+            </div>
+          </header>
+
+          {/* Main layout: form + side context */}
+          <main className="grid items-start gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1.1fr)]">
+            {/* Complaint form card */}
+            <section id="submit-form">
+              <Card className="p-5 sm:p-7 lg:p-8">
+                <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+                  <div className="space-y-1">
+                    <div className="inline-flex items-center gap-2 rounded-full bg-mint-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-primary-700">
+                      <span className="h-1.5 w-1.5 rounded-full bg-mint-300" />
+                      <span>New report</span>
+                    </div>
+                    <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-slate-900">
+                      Complaint details
+                    </h2>
+                    <p className="text-xs sm:text-sm text-slate-500">
+                      Share a clear description, location, and a photo so the right team can take
+                      action quickly.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1 text-[11px] font-medium text-slate-600">
+                    <span className="inline-flex h-1.5 w-1.5 rounded-full bg-mint-300" />
+                    Average acknowledgement in under 24 hours
+                  </div>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-7">
+                  {/* Complaint type */}
+                  <div>
+                    <InputField
+                      as="select"
+                      name="complaintType"
+                      label="Complaint type"
+                      required
+                      badge="Required"
+                      value={formData.complaintType}
+                      onChange={handleInputChange}
+                      error={errors.complaintType}
+                      className="cursor-pointer appearance-none pr-10"
+                    >
+                      <option value="">Choose a category…</option>
+                      <option value="pothole">🕳️ Pothole – Road damage</option>
+                      <option value="streetlight">💡 Streetlight – Not working</option>
+                      <option value="garbage">🗑️ Garbage – Collection issue</option>
+                      <option value="water">💧 Water – Supply problem</option>
+                      <option value="drainage">🌊 Drainage – Blockage</option>
+                      <option value="road">🛣️ Road – Maintenance needed</option>
+                      <option value="other">📋 Other – Describe below</option>
+                    </InputField>
+                    {/* Custom dropdown arrow */}
+                    <div className="pointer-events-none -mt-8 flex justify-end pr-3 text-primary-500">
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2.5}
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <div>
+                    <InputField
+                      as="textarea"
+                      name="description"
+                      label="Description"
+                      required
+                      badge="Required"
+                      value={formData.description}
+                      onChange={handleInputChange}
+                      error={errors.description}
+                      rows={5}
+                      placeholder="Describe what’s happening, when you noticed it, and how it impacts your area."
+                      className="resize-none"
+                    />
+                    <div className="mt-1 flex justify-end text-[11px] text-slate-400">
+                      {formData.description.length} characters
+                    </div>
+                  </div>
+
+                  {/* Location */}
+                  <div>
+                    <div className="mb-3 flex items-center justify-between gap-2">
+                      <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
+                        <MapPin className="h-3.5 w-3.5 text-primary-600" />
+                        Location
+                      </span>
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500">
+                        Optional – you can also describe it above
+                      </span>
+                    </div>
+                    <LocationDetector
+                      onLocationDetect={handleLocationDetect}
+                      latitude={formData.latitude}
+                      longitude={formData.longitude}
+                    />
+                  </div>
+
+                  {/* Image upload */}
+                  <div>
+                    <ImageUpload
+                      onImageSelect={handleImageSelect}
+                      selectedImage={formData.imagePreview}
+                    />
+                    {errors.image && (
+                      <p className="mt-2 text-[11px] font-medium text-red-600">{errors.image}</p>
+                    )}
+                  </div>
+
+                  {/* Submit */}
+                  <div className="pt-2">
+                    <Button
+                      type="submit"
+                      size="lg"
+                      fullWidth
+                      className="from-primary-700 via-primary-600 to-primary-700 bg-gradient-to-r hover:from-primary-800 hover:via-primary-700 hover:to-primary-800 shadow-[0_14px_40px_rgba(11,31,59,0.45)]"
+                    >
+                      Submit complaint
+                    </Button>
+                  </div>
+                </form>
+              </Card>
+            </section>
+
+            {/* Context column */}
+            <aside className="space-y-4">
+              <Card className="p-5 sm:p-6">
+                <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
+                  <AlertCircle className="h-4 w-4 text-primary-600" />
+                  <span>What happens after you submit</span>
+                </div>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Every issue you log generates a unique tracking ID stored securely in your
+                  browser. Use it anytime to monitor status, share with neighbours, or follow up
+                  with your city team.
+                </p>
+                <ul className="mt-4 space-y-2 text-sm text-slate-600">
+                  <li className="flex gap-2">
+                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-mint-300" />
+                    <span>Issues are batched and routed to the right department automatically.</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-mint-300" />
+                    <span>High-impact reports are prioritised based on severity and location.</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-mint-300" />
+                    <span>Historical reports help your city identify patterns and plan proactively.</span>
+                  </li>
+                </ul>
+              </Card>
+
+              <Card className="p-5 sm:p-6">
+                <div className="mb-3 flex items-center justify-between gap-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
+                  <span>Live health</span>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-mint-100 px-2 py-0.5 text-[10px] font-semibold text-primary-800">
+                    <span className="h-1.5 w-1.5 rounded-full bg-mint-300" />
+                    Operational
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-4 text-sm text-slate-600">
+                  <div>
+                    <div className="text-xs text-slate-500">Average acknowledgement</div>
+                    <div className="mt-1 text-base font-semibold text-slate-900">24 hours</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-slate-500">Resolution window</div>
+                    <div className="mt-1 text-base font-semibold text-slate-900">48–72 hours</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-slate-500">Your reports stored as</div>
+                    <div className="mt-1 text-base font-semibold text-slate-900">Local history</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-slate-500">Status visibility</div>
+                    <div className="mt-1 text-base font-semibold text-slate-900">Real‑time</div>
+                  </div>
+                </div>
+              </Card>
+            </aside>
+          </main>
+
+          {/* Supporting sections */}
+          <section id="how-it-works" className="space-y-12 pb-4 pt-10">
+            <LiveStats />
+            <HowItWorks />
+            <RecentResolutions />
+            <FeaturesShowcase />
+            <FAQ />
+            <CTASection />
+          </section>
+        </div>
       </div>
 
-     
-      <div id="how-it-works">
-        <LiveStats />
-        <HowItWorks />
-        <RecentResolutions />
-        <FeaturesShowcase />
-        <FAQ />
-        <CTASection />
-      </div>
-
-      {/* Success Modal */}
-      <SuccessModal 
+      <SuccessModal
         isOpen={showSuccess}
         onClose={() => setShowSuccess(false)}
         complaintId={generatedId}
