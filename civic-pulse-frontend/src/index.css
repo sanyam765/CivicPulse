@@ -2,13 +2,15 @@
 
 /* === ROOT VARIABLES === */
 :root {
-  --emerald-primary: #10b981;
-  --emerald-light: #22c55e;
-  --emerald-dark: #059669;
-  --teal-accent: #14b8a6;
-  --cyan-accent: #06b6d4;
-  --mint: #99f6e4;
-  --surface-bg: #f0faf7;
+  --emerald-primary: #0b1f3b;
+  /* now primary deep navy */
+  --emerald-light: #4fe3c1;
+  /* soft mint accent */
+  --emerald-dark: #050f25;
+  --teal-accent: #4fe3c1;
+  --cyan-accent: #79f0de;
+  --mint: #4fe3c1;
+  --surface-bg: #f5f7fb;
   --glass-bg: rgba(255, 255, 255, 0.6);
   --glass-border: rgba(255, 255, 255, 0.3);
   --shadow-color: rgba(16, 185, 129, 0.08);
@@ -30,7 +32,7 @@ html {
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 25%, #f0faf7 50%, #ecfdf5 75%, #f0fdfa 100%);
+  background: linear-gradient(135deg, #f5f7fb 0%, #f0f7ff 25%, #f5f7fb 50%, #f0fdfa 75%, #f5f7fb 100%);
   min-height: 100vh;
   color: #1e293b;
   -webkit-font-smoothing: antialiased;
@@ -60,21 +62,21 @@ body::before {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #10b981 0%, #14b8a6 100%);
+  background: linear-gradient(180deg, #0b1f3b 0%, #4fe3c1 100%);
   border-radius: 100px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #059669 0%, #0d9488 100%);
+  background: linear-gradient(180deg, #071527 0%, #35cbb0 100%);
   background-clip: padding-box;
 }
 
 /* === SELECTION COLOR === */
 ::selection {
-  background-color: rgba(16, 185, 129, 0.2);
-  color: #065f46;
+  background-color: rgba(11, 31, 59, 0.16);
+  color: #0b1f3b;
 }
 
 /* === FOCUS STYLES === */
@@ -82,7 +84,7 @@ input:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15), 0 0 20px rgba(16, 185, 129, 0.08);
+  box-shadow: 0 0 0 3px rgba(11, 31, 59, 0.18), 0 0 20px rgba(79, 227, 193, 0.14);
 }
 
 /* === ANTI-GRAVITY FLOATING ANIMATIONS === */
@@ -174,11 +176,11 @@ select:focus {
 
   0%,
   100% {
-    box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 0 8px rgba(79, 227, 193, 0.45);
   }
 
   50% {
-    box-shadow: 0 0 20px rgba(16, 185, 129, 0.6), 0 0 40px rgba(16, 185, 129, 0.15);
+    box-shadow: 0 0 20px rgba(79, 227, 193, 0.7), 0 0 40px rgba(11, 31, 59, 0.18);
   }
 }
 
@@ -198,11 +200,11 @@ select:focus {
 
   0%,
   100% {
-    filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.3));
+    filter: drop-shadow(0 0 6px rgba(79, 227, 193, 0.4));
   }
 
   50% {
-    filter: drop-shadow(0 0 16px rgba(16, 185, 129, 0.5));
+    filter: drop-shadow(0 0 16px rgba(79, 227, 193, 0.65));
   }
 }
 
@@ -223,11 +225,11 @@ select:focus {
 
 .aurora-bg {
   background: linear-gradient(-45deg,
-      rgba(16, 185, 129, 0.08),
-      rgba(20, 184, 166, 0.06),
-      rgba(6, 182, 212, 0.08),
-      rgba(16, 185, 129, 0.04),
-      rgba(52, 211, 153, 0.06));
+      rgba(11, 31, 59, 0.12),
+      rgba(79, 227, 193, 0.10),
+      rgba(90, 148, 219, 0.10),
+      rgba(11, 31, 59, 0.08),
+      rgba(79, 227, 193, 0.10));
   background-size: 300% 300%;
   animation: aurora 12s ease-in-out infinite;
 }
@@ -306,9 +308,9 @@ select:focus {
 
 .text-shimmer {
   background: linear-gradient(90deg,
-      #10b981 0%,
-      #5eead4 40%,
-      #10b981 80%);
+      #4fe3c1 0%,
+      #9adcf1 40%,
+      #0b1f3b 80%);
   background-size: 500px 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -485,7 +487,7 @@ select:focus {
   position: absolute;
   inset: -1px;
   border-radius: inherit;
-  background: linear-gradient(135deg, #10b981, #14b8a6, #06b6d4, #10b981);
+  background: linear-gradient(135deg, #0b1f3b, #4fe3c1, #5b719e, #0b1f3b);
   background-size: 300% 300%;
   animation: gradient-border-rotate 4s ease infinite;
   z-index: -1;
@@ -582,11 +584,11 @@ select:focus {
 
   0%,
   100% {
-    box-shadow: 0 0 4px rgba(16, 185, 129, 0.4);
+    box-shadow: 0 0 4px rgba(79, 227, 193, 0.5);
   }
 
   50% {
-    box-shadow: 0 0 12px rgba(16, 185, 129, 0.7);
+    box-shadow: 0 0 12px rgba(79, 227, 193, 0.8);
   }
 }
 
@@ -626,4 +628,20 @@ select:focus {
 
 .animate-slide-down {
   animation: slide-down 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes scale-in {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-scale-in {
+  animation: scale-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
