@@ -17,10 +17,9 @@ export default function CitizenNavbar() {
     }, [])
 
     const navLinks = [
-        { label: 'Home', path: '/citizen' },
-        { label: 'Submit', path: '/citizen/submit' },
-        { label: 'My Complaints', path: '/citizen/my-complaints' },
-        { label: 'Track', path: '/citizen/track' },
+        { label: 'Solutions', path: '/' },
+        { label: 'How it Works', path: '#how-it-works' },
+        { label: 'Pricing', path: '#pricing' },
     ]
 
     const isActive = (path) => {
