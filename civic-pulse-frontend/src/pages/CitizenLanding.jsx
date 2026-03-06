@@ -111,18 +111,10 @@ export default function CitizenLanding() {
         { num: '04', title: 'Fixed for Good', desc: 'Verification and resolution confirmation sent to your phone.', icon: '✨' },
     ]
 
-    const liveStats = [
-        { label: 'Total Intake', value: 10847 + counts.total, suffix: '', icon: '📊', color: 'emerald' },
-        { label: 'Fixed Issues', value: 9623 + counts.resolved, suffix: '', icon: '✅', color: 'teal' },
-        { label: 'Success Rate', value: 98, suffix: '%', icon: '💎', color: 'cyan' },
-        { label: 'Response Time', value: 14, suffix: 'h', icon: '⚡', color: 'amber' },
-    ]
-
-    const faqs = [
-        { q: 'How long until my issue is fixed?', a: 'High-priority safety issues are typically addressed within 24 hours. General maintenance requests average 3-5 days for resolution.' },
-        { q: 'Can I track resolution anonymously?', a: 'Absolutely. Every submission generates a unique tracking ID that you can use without any account creation.' },
-        { q: 'What happens after I submit a photo?', a: 'Our system analyzes the image to verify the issue, detects the exact GPS coordinates, and assigns it to the local municipal crew.' },
-        { q: 'Is there a mobile app available?', a: 'Civic Pulse is a Progressive Web App (PWA). You can "Add to Home Screen" on your phone for a full app-like experience.' },
+    const testimonials = [
+        { name: 'Sarah Jenkins', role: 'Local Business Owner', quote: 'I reported a streetlight outage in front of my shop, and it was fixed the very next day. This app has made our block safer.', avatar: 'https://i.pravatar.cc/150?img=32' },
+        { name: 'Michael Chen', role: 'Daily Commuter', quote: 'The pothole reporting is incredibly accurate. I uploaded a photo, the AI tagged the location, and I got a text when the crew filled it.', avatar: 'https://i.pravatar.cc/150?img=11' },
+        { name: 'Elena Rodriguez', role: 'Community Organizer', quote: 'CivicPulse feels like we finally have a direct line to city hall. The transparency in tracking the resolution progress is a game changer.', avatar: 'https://i.pravatar.cc/150?img=47' }
     ]
 
     return (
@@ -135,99 +127,97 @@ export default function CitizenLanding() {
             </div>
 
             {/* ─── HERO SECTION ─── */}
-            <section className="relative pt-32 pb-20 px-6 text-center overflow-visible">
-                <div className="max-w-5xl mx-auto relative z-10">
-                    {/* Badge */}
-                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-100/50 shadow-sm mb-8 animate-slide-down">
-                        <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[10px] sm:text-xs font-bold text-emerald-700 uppercase tracking-widest">
-                            New: Resolved 120+ issues this morning
-                        </span>
-                    </div>
-
-                    <h1 className="font-display text-5xl md:text-8xl font-black text-slate-800 tracking-tight leading-[0.95] mb-8 animate-slide-up">
-                        Your Town. <br />
-                        <span className="text-shimmer italic">Perfected.</span>
-                    </h1>
-
-                    <p className="text-lg md:text-xl text-slate-500 mb-12 max-w-2xl mx-auto leading-relaxed animate-slide-up stagger-1 font-medium">
-                        Civic Pulse connects you directly to city maintenance.
-                        No queues, no paperwork—just fast resolutions for a better community.
-                    </p>
-
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up stagger-2 mb-20 relative z-20">
-                        <Link
-                            to="/citizen/submit"
-                            className="w-full sm:w-auto px-10 py-5 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 shadow-2xl shadow-slate-900/10 transition-all hover:scale-[1.03] active:scale-[0.98] flex items-center justify-center gap-3 group"
-                        >
-                            <span>Start a Report</span>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="group-hover:translate-x-1 transition-transform">
-                                <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-                            </svg>
-                        </Link>
-                        <Link
-                            to="/citizen/track"
-                            className="w-full sm:w-auto px-10 py-5 glass rounded-2xl font-bold text-slate-700 hover:bg-white transition-all hover:scale-[1.03] active:scale-[0.98] border border-white/40"
-                        >
-                            Track Existing Issue
-                        </Link>
-                    </div>
-
-                    {/* Trust / Logo Cloud */}
-                    <div className="animate-fade-in stagger-3">
-                        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-8">Trusted by Residents in 50+ Municipalities</p>
-                        <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-40 grayscale group-hover:grayscale-0 transition-all duration-700">
-                            <span className="font-display text-xl font-black">CITYHUB</span>
-                            <span className="font-display text-xl font-black tracking-tighter">METROCORE</span>
-                            <span className="font-display text-xl font-black italic">URBANFLOW</span>
-                            <span className="font-display text-xl font-black">CIVICON</span>
+            <section className="relative pt-32 pb-20 px-6 overflow-hidden">
+                <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+                    <div className="relative z-10">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100 mb-6">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-widest">Resident Issue Dashboard</span>
+                        </div>
+                        <h1 className="text-6xl md:text-[5.5rem] font-black text-[#0f172a] leading-[1.05] tracking-tight mb-6">
+                            A Smarter Way to <br />
+                            <span className="text-[#10b981] italic font-medium tracking-normal pr-1">Manage</span> Civic <br />
+                            Issues
+                        </h1>
+                        <p className="text-lg text-slate-500 mb-10 max-w-xl leading-relaxed">
+                            Bridge the gap between citizens and administration. Our platform streamlines complaint reporting, department routing, and resource tracking in one unified interface.
+                        </p>
+                        <div className="flex flex-wrap gap-4">
+                            <Link to="/citizen/submit" className="px-8 py-4 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-600/20 flex items-center gap-2">
+                                Report an Issue
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14m-7-7 7 7-7 7" /></svg>
+                            </Link>
+                            <Link to="/citizen/track" className="px-8 py-4 bg-white text-slate-700 border border-slate-200 rounded-xl font-bold hover:bg-slate-50 transition-all">
+                                View Dashboard
+                            </Link>
+                        </div>
+                        <div className="mt-12 flex items-center gap-8 border-t border-slate-100 pt-8">
+                            <div>
+                                <p className="text-2xl font-bold text-slate-900">10,847</p>
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Reports</p>
+                            </div>
+                            <div>
+                                <p className="text-2xl font-bold text-slate-900">9,623</p>
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Fixed Issues</p>
+                            </div>
+                            <div>
+                                <p className="text-2xl font-bold text-slate-900">14h</p>
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Avg Response</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </section>
-
-            {/* ─── LIVE DASHBOARD SECTION ─── */}
-            <section className="py-20 px-6">
-                <div className="max-w-6xl mx-auto">
-                    <div className="glass rounded-[2rem] p-1 shadow-2xl relative overflow-hidden group">
-                        <div className="absolute inset-0 aurora-bg opacity-30 group-hover:opacity-50 transition-opacity duration-1000" />
-                        <div className="relative z-10 p-8 md:p-14 bg-white/40 rounded-[1.8rem] backdrop-blur-xl border border-white/20">
-                            <div className="flex flex-col md:flex-row items-end justify-between gap-6 mb-16">
-                                <div className="max-w-md text-left">
-                                    <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 pulse-glow" />
-                                        <span className="text-xs font-bold text-emerald-600 uppercase tracking-widest">Live Pulse Dashboard</span>
-                                    </div>
-                                    <h2 className="font-display text-3xl md:text-5xl font-black text-slate-800 leading-[1.1] tracking-tighter">
-                                        Real Impact. <br />Measured in Real-Time.
-                                    </h2>
+                    <div className="relative">
+                        <div className="absolute inset-0 bg-emerald-400/10 blur-[100px] rounded-full sm:block hidden" />
+                        <div className="relative glass rounded-3xl p-6 shadow-2xl border border-white/50">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="flex gap-2">
+                                    <div className="w-3 h-3 rounded-full bg-slate-200 hover:bg-red-400 transition-colors cursor-pointer" />
+                                    <div className="w-3 h-3 rounded-full bg-slate-200 hover:bg-amber-400 transition-colors cursor-pointer" />
+                                    <div className="w-3 h-3 rounded-full bg-slate-200 hover:bg-emerald-400 transition-colors cursor-pointer" />
                                 </div>
-                                <div className="flex flex-col items-end gap-2">
-                                    <div className="flex -space-x-3">
-                                        {[1, 2, 3, 4].map(i => (
-                                            <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden shadow-md group-hover:translate-y-[-4px] transition-transform" style={{ transitionDelay: `${i * 50}ms` }}>
-                                                <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="user" />
-                                            </div>
-                                        ))}
-                                        <div className="w-10 h-10 rounded-full border-2 border-white bg-emerald-500 text-white text-[10px] font-bold flex items-center justify-center shadow-md group-hover:translate-y-[-4px] transition-transform">+2k</div>
-                                    </div>
-                                    <p className="text-xs font-bold text-slate-400">JOIN 10,000+ CONTRIBUTORS</p>
+                                <div className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100 flex items-center gap-1.5">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                    AI processing
                                 </div>
                             </div>
+                            <div className="space-y-3">
+                                <div className="w-full h-36 rounded-xl bg-slate-100 overflow-hidden relative group">
+                                    <img src="https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&q=80&w=600" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Pothole" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent" />
 
-                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-                                {liveStats.map((stat, i) => (
-                                    <div key={i} className="group/stat text-left">
-                                        <div className="text-3xl mb-4 group-hover/stat:scale-110 group-hover/stat:rotate-6 transition-all duration-300 transform-gpu origin-left">
-                                            {stat.icon}
+                                    {/* Scanning line animation */}
+                                    <div className="absolute top-0 bottom-0 w-[2px] bg-emerald-400 shadow-[0_0_15px_3px_#34d399] animate-[pulse_1s_infinite] left-[0%] transition-all duration-[3000ms] ease-linear overflow-hidden" style={{ animation: 'scan 3s infinite linear alternate' }} />
+
+                                    <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-white"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                            <span className="text-[10px] text-white font-bold drop-shadow-md">Detected: 5th Ave & Main</span>
                                         </div>
-                                        <div className="font-display text-4xl md:text-5xl font-black text-slate-800 tracking-tighter mb-2">
-                                            <Counter target={stat.value} suffix={stat.suffix} />
-                                        </div>
-                                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest group-hover/stat:text-emerald-500 transition-colors">{stat.label}</p>
                                     </div>
-                                ))}
+                                </div>
+
+                                <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                                    <div className="flex justify-between items-center mb-3">
+                                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Analysis Result</span>
+                                        <span className="text-xs font-bold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded">98% Match</span>
+                                    </div>
+                                    <div className="flex flex-wrap gap-2 mb-4">
+                                        <span className="px-2.5 py-1 bg-rose-100 text-rose-700 rounded-md text-[10px] font-bold uppercase tracking-wider border border-rose-200 shadow-sm">Hazard: Pothole</span>
+                                        <span className="px-2.5 py-1 bg-amber-100 text-amber-700 rounded-md text-[10px] font-bold uppercase tracking-wider border border-amber-200 shadow-sm">Priority: High</span>
+                                        <span className="px-2.5 py-1 bg-blue-100 text-blue-700 rounded-md text-[10px] font-bold uppercase tracking-wider border border-blue-200 shadow-sm">Dept: Public Works</span>
+                                    </div>
+                                    <div className="flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                        <span>Confidence Score</span>
+                                        <span>Auto-Routing...</span>
+                                    </div>
+                                </div>
                             </div>
+                            <style>{`
+                                @keyframes scan {
+                                    0% { left: 0%; }
+                                    100% { left: 100%; }
+                                }
+                            `}</style>
                         </div>
                     </div>
                 </div>
@@ -269,27 +259,36 @@ export default function CitizenLanding() {
                 </div>
             </section>
 
-            {/* ─── PROCESS ─── */}
-            <section className="py-24 px-6">
-                <div className="max-w-6xl mx-auto bg-slate-900 rounded-[3rem] p-12 md:p-20 relative overflow-hidden">
-                    <div className="absolute inset-0 aurora-bg opacity-10" />
-                    <div className="relative z-10">
-                        <div className="text-center mb-20">
-                            <h2 className="font-display text-4xl md:text-6xl font-black text-white mb-4 tracking-tighter">Smooth as silk.</h2>
-                            <p className="text-lg text-slate-400 max-w-xl mx-auto font-medium">A workflow built for the modern citizen.</p>
-                        </div>
+            {/* ─── PROCESS SECTION ─── */}
+            <section id="how-it-works" className="py-24 px-6 overflow-hidden">
+                <div className="max-w-7xl mx-auto text-center relative">
+                    <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4 text-center">A Streamlined 3-Step Process</h2>
+                    <p className="text-slate-500 max-w-2xl mx-auto text-center mb-16">
+                        From identifying a local problem to seeing it resolved, Civic Pulse connects you directly to the teams that can fix it.
+                    </p>
 
-                        <div className="grid md:grid-cols-4 gap-8">
-                            {steps.map((step, i) => (
-                                <div key={i} className="relative group p-8 hover:bg-white/5 rounded-[2rem] transition-colors border border-transparent hover:border-white/10">
-                                    <div className="font-display text-8xl font-black text-white/[0.03] absolute -top-4 -left-4 group-hover:text-emerald-500/[0.05] transition-colors pointer-events-none">
-                                        {step.num}
+                    <div className="max-w-5xl mx-auto relative pt-4">
+                        {/* Connecting Line (Desktop) */}
+                        <div className="absolute top-[3.25rem] left-[15%] right-[15%] h-0.5 bg-gradient-to-r from-emerald-100 via-emerald-400/50 to-emerald-100 hidden md:block" />
+
+                        <div className="grid md:grid-cols-3 gap-8 relative z-10">
+                            {processSteps.map((step, i) => (
+                                <div key={i} className="flex flex-col flex-1 group">
+                                    <div className="w-full flex justify-center mb-8 relative">
+                                        <div className="absolute inset-0 bg-emerald-50 rounded-full scale-0 group-hover:scale-[2] transition-transform duration-700 ease-out opacity-0 group-hover:opacity-50" />
+                                        <div className="w-20 h-20 bg-white rounded-full border-[3px] border-emerald-100 flex items-center justify-center shadow-lg relative group-hover:border-emerald-400 group-hover:scale-110 transition-all duration-300">
+                                            <span className="text-2xl font-black text-emerald-600 font-display group-hover:text-emerald-500 transition-colors">0{step.num}</span>
+                                        </div>
                                     </div>
-                                    <div className="text-4xl mb-6 transform group-hover:-rotate-12 transition-transform duration-500">
-                                        {step.icon}
+                                    <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden group-hover:shadow-xl group-hover:-translate-y-2 transition-all duration-300 flex-1 flex flex-col justify-center">
+                                        <div className="absolute -right-6 -top-6 text-[120px] font-black text-slate-50/60 pointer-events-none transition-colors duration-500 group-hover:text-emerald-50/50">
+                                            {step.num}
+                                        </div>
+                                        <h3 className="text-xl font-bold text-slate-900 mb-4 relative z-10 group-hover:text-emerald-700 transition-colors">{step.title}</h3>
+                                        <p className="text-sm text-slate-500 leading-relaxed relative z-10">
+                                            {step.desc}
+                                        </p>
                                     </div>
-                                    <h3 className="font-display text-xl font-bold text-white mb-3 tracking-tight">{step.title}</h3>
-                                    <p className="text-sm text-slate-400 leading-relaxed font-medium">{step.desc}</p>
                                 </div>
                             ))}
                         </div>
@@ -328,25 +327,31 @@ export default function CitizenLanding() {
                 </div>
             </section>
 
-            {/* ─── FAQ ─── */}
-            <section className="py-24 px-6 relative bg-emerald-50/20 rounded-[4rem] mx-4 mb-20 border border-emerald-100/30">
-                <div className="max-w-3xl mx-auto relative z-10">
+            {/* ─── TESTIMONIALS SECTION ─── */}
+            <section className="py-24 px-6 overflow-hidden">
+                <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">
-                        <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center mx-auto mb-6">
-                            <span className="text-2xl">❓</span>
-                        </div>
-                        <h2 className="font-display text-4xl font-black text-slate-800 tracking-tighter mb-4">Got questions?</h2>
-                        <p className="text-slate-500 font-medium">Everything you need to know about the Pulse workflow.</p>
+                        <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">Real Impact in Your Neighborhood</h2>
+                        <p className="text-slate-500 max-w-2xl mx-auto">Hear from citizens who are already helping to improve our city infrastructure every day.</p>
                     </div>
-                    <div className="space-y-4">
-                        {faqs.map((faq, i) => (
-                            <FAQItem
-                                key={i}
-                                q={faq.q}
-                                a={faq.a}
-                                open={faqOpen === i}
-                                toggle={() => setFaqOpen(faqOpen === i ? null : i)}
-                            />
+
+                    <div className="grid md:grid-cols-3 gap-8">
+                        {testimonials.map((testimonial, i) => (
+                            <div key={i} className="bg-slate-50 p-8 rounded-[2rem] border border-slate-100 hover:-translate-y-2 transition-transform duration-300">
+                                <div className="text-emerald-500 mb-6">
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
+                                </div>
+                                <p className="text-slate-700 italic leading-relaxed mb-8">"{testimonial.quote}"</p>
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-200">
+                                        <img src={testimonial.avatar} alt={testimonial.name} className="w-full h-full object-cover" />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-slate-900">{testimonial.name}</h4>
+                                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-0.5">{testimonial.role}</p>
+                                    </div>
+                                </div>
+                            </div>
                         ))}
                     </div>
                 </div>
