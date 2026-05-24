@@ -73,7 +73,7 @@ export default function SubmitComplaint() {
             <TopBar title="Submit Complaint" subtitle="File a new civic complaint" />
 
             <div className="max-w-3xl mx-auto">
-                {/* Progress Steps */}
+
                 <div className="glass rounded-2xl shadow-float p-5 mb-6">
                     <div className="flex items-center justify-between">
                         {[
@@ -110,9 +110,8 @@ export default function SubmitComplaint() {
                     </div>
                 </div>
 
-                {/* Form Content */}
                 <div className="glass rounded-2xl shadow-float p-8">
-                    {/* Step 1: Category */}
+
                     {step === 1 && (
                         <div className="animate-slide-up">
                             <h2 className="font-display text-xl font-bold text-slate-800 mb-2">Select Category</h2>
@@ -144,7 +143,6 @@ export default function SubmitComplaint() {
                         </div>
                     )}
 
-                    {/* Step 2: Details */}
                     {step === 2 && (
                         <div className="animate-slide-up space-y-6">
                             <div>
@@ -200,7 +198,6 @@ export default function SubmitComplaint() {
                         </div>
                     )}
 
-                    {/* Step 3: Location */}
                     {step === 3 && (
                         <div className="animate-slide-up space-y-6">
                             <div>
@@ -240,7 +237,6 @@ export default function SubmitComplaint() {
                                 )}
                             </button>
 
-                            {/* Mini Preview Map */}
                             {formData.location && (
                                 <div className="h-[200px] rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 relative overflow-hidden border border-emerald-100/50 animate-scale-in">
                                     <div className="absolute inset-0 opacity-[0.06]"
@@ -261,7 +257,6 @@ export default function SubmitComplaint() {
                         </div>
                     )}
 
-                    {/* Step 4: Review */}
                     {step === 4 && (
                         <div className="animate-slide-up space-y-6">
                             <div>
@@ -289,7 +284,6 @@ export default function SubmitComplaint() {
                         </div>
                     )}
 
-                    {/* Navigation Buttons */}
                     <div className="flex items-center justify-between mt-8 pt-6 border-t border-slate-100/60">
                         {step > 1 && (
                             <button

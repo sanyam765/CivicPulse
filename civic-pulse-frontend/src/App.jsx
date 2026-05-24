@@ -3,7 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { RoleProvider, useRole } from './context/RoleContext'
 import Sidebar from './components/shared/Sidebar'
 import ParticleBackground from './components/shared/ParticleBackground'
-
+import CityMap from './pages/CityMap'
+import Analytics from './pages/Analytics'
+import { AuthProvider } from './context/AuthContext'
 // Auth
 import Auth from './pages/Auth'
 
@@ -12,7 +14,6 @@ import Dashboard from './pages/Dashboard'
 import Complaints from './pages/Complaints'
 import MapView from './pages/MapView'
 import Timeline from './pages/Timeline'
-import Analytics from './pages/Analytics'
 import SubmitComplaint from './pages/SubmitComplaint'
 import Settings from './pages/Settings'
 
@@ -22,6 +23,8 @@ import CitizenSubmit from './pages/CitizenSubmit'
 import CitizenTrack from './pages/CitizenTrack'
 import CitizenMyComplaints from './pages/CitizenMyComplaints'
 import CitizenNavbar from './components/citizen/CitizenNavbar'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 
 /* ─── Helpers ─── */
 function ProtectedRoute({ children, requiredRole }) {
@@ -53,6 +56,18 @@ function AdminLayout() {
       <main className={`transition-all duration-500 min-h-screen relative z-10 ${collapsed ? 'ml-[78px]' : 'ml-[260px]'}`}>
         <div className="p-8">
           <Routes>
+            
+            <Route path="/admin/city-map" element={
+  <ProtectedRoute>
+    <CityMap />
+  </ProtectedRoute>
+} />
+<Route path="/admin/analytics" element={
+  <ProtectedRoute>
+    <Analytics />
+  </ProtectedRoute>
+} />
+
             <Route path="/" element={<Dashboard />} />
             <Route path="/complaints" element={<Complaints />} />
             <Route path="/map" element={<MapView />} />
@@ -61,6 +76,7 @@ function AdminLayout() {
             <Route path="/submit" element={<SubmitComplaint />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
           </Routes>
         </div>
       </main>
@@ -90,7 +106,10 @@ function RoleRouter() {
   const { role, isLoggedIn } = useRole()
 
   return (
+    
     <Routes>
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="/login" element={<PublicRoute><Auth /></PublicRoute>} />
 
       {isLoggedIn ? (
@@ -117,9 +136,11 @@ function RoleRouter() {
 function App() {
   return (
     <Router>
-      <RoleProvider>
-        <RoleRouter />
-      </RoleProvider>
+      <AuthProvider>
+        <RoleProvider>
+          <RoleRouter />
+        </RoleProvider>
+      </AuthProvider>
     </Router>
   )
 }

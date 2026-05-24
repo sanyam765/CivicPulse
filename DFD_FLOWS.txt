@@ -1,0 +1,818 @@
+================================================================================
+CIVIC PULSE - DATA FLOW DIAGRAMS (TEXT FORMAT)
+================================================================================
+
+================================================================================
+LEVEL 0 - CONTEXT DIAGRAM
+================================================================================
+
+SYSTEM: Civic Pulse Platform
+
+EXTERNAL ENTITIES:
+E1: Civilian (Citizen)
+E2: Admin (Platform Administrator)
+E3: Government Department
+E4: Email Service (External)
+E5: SMS/Push Service (External)
+E6: Mapping/Geocoding API (External)
+
+DATA FLOWS FROM ENTITIES TO SYSTEM:
+E1 → System: Complaint Data (Title, Description, Category, Images, Location)
+E1 → System: Authentication Request (Email, Password)
+E1 → System: Complaint Tracking Request (Complaint ID)
+E1 → System: Feedback/Rating (Complaint ID, Rating, Comments)
+E1 → System: Profile Update (Name, Phone, Address)
+
+E2 → System: Status Update Request (Complaint ID, New Status)
+E2 → System: Department Assignment (Complaint ID, Department ID)
+E2 → System: User Management Request (Create, Update, Delete, View)
+E2 → System: Department Information (Officer Details, Contact)
+E2 → System: Dashboard Access Request (Analytics Query)
+
+E3 → System: Status Update (Complaint ID, Resolution Details, Assigned Officer)
+E3 → System: Escalation Request (Complaint ID, Escalation Level, Reason)
+E3 → System: Department Info Update (Officer Changes, Contact Updates)
+E3 → System: Confirmation Response (Assignment Acknowledgment)
+
+DATA FLOWS FROM SYSTEM TO ENTITIES:
+System → E1: Complaint Confirmation & ID
+System → E1: OTP Verification Code
+System → E1: Status Update Notification
+System → E1: Real-time Statistics (Total, Resolved, Pending, Avg Time)
+System → E1: Map Data (Complaint Locations, Filters)
+System → E1: Complaint Details (Images, Timeline, Status, Officer Info)
+System → E1: Timeline Updates
+
+System → E2: Email Alert (Escalations, System Alerts)
+System → E2: Analytics Dashboard (Department Performance, Metrics)
+System → E2: Filtered Complaint List (with Search Results)
+System → E2: System Reports & Logs
+System → E2: Department Management Interface
+System → E2: User Activity Logs
+
+System → E3: Assigned Complaints (Full Details, Images, Location)
+System → E3: Complaint Details (Description, Category, Images, Map Location)
+System → E3: Escalation Notification
+System → E3: Performance Metrics (Resolution Time, Completion Rate)
+System → E3: Status Update Confirmation
+
+System → E4: Email Request (Welcome, OTP, Status Update, Escalation Alert)
+System → E4: Email Response (Delivery Status)
+
+System → E5: SMS/Push Request (Status Updates, Notifications)
+System → E5: Notification Response (Delivery Status)
+
+System → E6: Geocoding Request (Location Coordinates, Address)
+System → E6: Map Data Response (GPS Coordinates, Address Info)
+
+================================================================================
+LEVEL 1 - SYSTEM PROCESSES
+================================================================================
+
+PROCESS 1: USER AUTHENTICATION & MANAGEMENT
+Inputs:
+- Civilian: Registration Data (Name, Email, Phone, Address)
+- Civilian: Login Credentials (Email, Password)
+- Civilian: Profile Update (Name, Phone, Address)
+- Admin: User Management Request (Create, Update, Delete, View)
+
+Processing:
+- Validate Email & Phone
+- Generate & Send OTP
+- Verify OTP
+- Hash & Store Password
+- Create/Update User Record
+- Generate Authentication Token
+- Verify Token for Protected Routes
+
+Outputs:
+- Civilian: OTP Verification Code
+- Civilian: Welcome Email Notification
+- Civilian: Authentication Token
+- Civilian: Profile Confirmation
+- Admin: User List & Activity Logs
+- E4 (Email Service): Send OTP Request
+- E5 (SMS/Push): Send Verification Code
+
+Data Stores Used:
+- User Database (ID, Email, Phone, Password, Address, Status, Created Date)
+- OTP Database (Email, Code, Generated Time, Expiry, Verified)
+- Audit Log (User ID, Action, Timestamp, IP Address)
+
+---
+
+PROCESS 2: COMPLAINT MANAGEMENT & TRACKING
+Inputs:
+- Civilian: Complaint Data (Title, Description, Category, Images, Location)
+- Civilian: Complaint ID (Tracking Request)
+- Civilian: Feedback/Rating (Complaint ID, Rating, Comments)
+- Admin: Status Update (Complaint ID, New Status)
+- Admin: Department Assignment (Complaint ID, Department ID)
+- Department: Status Update (Complaint ID, Resolution Details)
+- Department: Escalation Request (Complaint ID, Reason)
+
+Processing:
+- Validate Complaint Data (Check Duplicates)
+- Geocode Location (Manual or GPS)
+- Store Media Files
+- Create Complaint Record (Assign ID, Set Status=Open)
+- Generate Timeline
+- Track Status Changes
+- Handle Escalations
+- Update Complaint Status
+- Compile Complaint Details
+
+Outputs:
+- Civilian: Complaint Confirmation & ID
+- Civilian: Complaint Status Updates
+- Civilian: Complaint Details (Images, Timeline, Status)
+- Civilian: Map Data (Location, Status)
+- Civilian: Timeline Information
+- Admin: Filtered Complaint Lists
+- Admin: Full Complaint Details
+- Department: Assigned Complaints
+- Department: Escalation Notifications
+- E4 (Email Service): Status Update Notification
+- E5 (SMS/Push): Status Update Notification
+- E6 (Mapping API): Geocoding Request
+
+Data Stores Used:
+- Complaint Database (ID, Title, Description, Category, Status, Civilian ID, Department ID, Created Date, Updated Date)
+- Media Storage (File ID, Complaint ID, File Type, Storage Path, Upload Date)
+- Complaint Status History (ID, Complaint ID, Status, Timestamp, Updated By, Notes)
+- Timeline Database (ID, Complaint ID, Events, Timestamps, Descriptions)
+
+---
+
+PROCESS 3: DEPARTMENT & ADMIN OPERATIONS
+Inputs:
+- Admin: Search Query & Filters (Status, Department, Date, Location)
+- Admin: Assignment Request (Complaint ID, Department ID)
+- Admin: Delete/Archive Request (Complaint ID, Reason)
+- Admin: Department Info Update (Officer, Contact)
+- Admin: Analytics Query (Date Range, Department, Status)
+- Department: Officer/Contact Information Update
+
+Processing:
+- Query Complaint Database with Filters
+- Apply Sorting & Pagination
+- Validate Department Availability
+- Create Assignment Record
+- Perform Soft Delete
+- Create/Update Department Profile
+- Aggregate Analytics Metrics
+- Generate Reports
+
+Outputs:
+- Admin: Filtered Complaint List
+- Admin: Full Complaint Details
+- Admin: Assignment Confirmation
+- Admin: Analytics Dashboard (Total, Resolved, Pending, Avg Time)
+- Admin: Department Performance Report
+- Admin: Status Distribution Chart
+- Admin: Department Management Interface
+- Admin: User Activity Logs
+- Department: Assignment Confirmation Notification
+- E4 (Email Service): Department Assignment Alert
+
+Data Stores Used:
+- Department Database (ID, Name, Email, Phone, Address, Status, Created Date)
+- Officer Database (ID, Name, Department ID, Email, Phone, Status, Created Date)
+- Assignment History (ID, Complaint ID, Department ID, Assigned Date, Status)
+- Analytics Cache (Metrics, Update Timestamp)
+- Audit Log (Action, User ID, Timestamp, Details)
+
+---
+
+PROCESS 4: NOTIFICATION & COMMUNICATION
+Inputs:
+- Complaint Management: Status Change Event
+- Admin Operations: Alert Event (Escalation, Assignment)
+- User Authentication: Verification Event (OTP)
+- Department Operations: Update Event (Resolution, Escalation)
+
+Processing:
+- Route Notifications by Type (Email, SMS, Push)
+- Format Message Content
+- Determine Recipients
+- Queue Notification Request
+- Track Delivery Status
+- Retry Failed Notifications
+
+Outputs:
+- E4 (Email Service): Email Request (Welcome, OTP, Status Update, Alerts)
+- E5 (SMS/Push Service): Push/SMS Request (Status Updates, Alerts)
+- Civilian: Delivery Confirmation
+- Admin: Delivery Logs
+- Department: Delivery Status
+
+Data Stores Used:
+- Notification Queue (ID, Type, Recipient, Message, Status, Created Date)
+- Notification Template (Type, Subject, Body, Variables)
+- Delivery Log (Notification ID, Timestamp, Status, Retry Count)
+
+---
+
+PROCESS 5: ANALYTICS & REPORTING
+Inputs:
+- Complaint Data (Status, Timeline, Department, Civilian)
+- User Data (Registration Count, Login Frequency)
+- Assignment Data (Department Workload, Officer Performance)
+- Feedback Data (Ratings, Comments)
+
+Processing:
+- Aggregate Complaint Metrics (Total, Resolved, Pending, Rejected)
+- Calculate Average Resolution Time
+- Compile Department Performance
+- Generate Status Distribution
+- Track Complaint Categories
+- Calculate Citizen Satisfaction Rate
+- Generate Monthly/Weekly Reports
+
+Outputs:
+- Civilian: Real-time Statistics (Total, Resolved, Pending, Avg Time)
+- Civilian: Analytics Dashboard (Public Data)
+- Admin: Full Analytics Dashboard (All Metrics)
+- Admin: Department Performance Report
+- Admin: Status Distribution Chart
+- Admin: Average Resolution Time Metrics
+- Admin: Citizen Satisfaction Rate
+- Reports: Monthly/Weekly Reports
+
+Data Stores Used:
+- Analytics Cache (Metrics, Timestamps, Update Frequency)
+- Complaint Statistics (Status Count, Category Count, Dept Performance)
+- Feedback & Ratings (Complaint ID, Rating, Timestamp)
+- User Statistics (Registration Count, Active Users, Login Frequency)
+
+================================================================================
+LEVEL 1 FLOWS - CIVIC PULSE (SUMMARY)
+================================================================================
+
+FROM CIVILIAN (REQUESTS)
+→ Real-time Statistics Request
+→ View City Map
+→ View Analytics (if public)
+→ View Timeline
+→ Upload Images
+→ Raise Civic Complaint
+→ Track Complaint Status
+→ View Complaint Details
+→ Provide Feedback/Rating
+→ Registration/Login Credentials
+→ Update Profile
+
+FROM ADMIN (REQUESTS/ACTIONS)
+→ Update Complaint Status
+→ Assign Complaints to Departments
+→ View Analytics Dashboard
+→ View City Map with Filters
+→ View Timeline
+→ Search & Filter Complaints
+→ Delete/Archive Complaints
+→ Manage User Accounts
+→ Manage Department Information
+→ View OTP Verification Logs
+
+FROM GOVERNMENT DEPARTMENTS (REQUESTS/ACTIONS)
+→ Update Complaint Status
+→ Escalation Requests
+→ Officer/Contact Information
+→ Department Assignment Confirmation
+→ Resolution Details
+→ Assigned Officer Information
+
+FROM SYSTEM TO CIVILIAN (OUTPUTS)
+← Email Notifications (Welcome, Confirmation, Status Updates)
+← Real-time Stats (Total Complaints, Resolved, Pending, Avg Resolution Time)
+← Map Data (Complaint Locations)
+← Timeline Updates
+← Complaint Confirmation & ID
+← OTP for Verification
+← Analytics Dashboard Data
+← Complaint Status Updates
+← Push/SMS Notifications
+
+FROM SYSTEM TO ADMIN (OUTPUTS)
+← Email Notifications (System Alerts, Escalations)
+← Analytics Dashboard (Department-wise breakdown, Performance metrics)
+← Map Data (All complaints with filters)
+← Filtered Complaint Lists
+← System Reports
+← Department Management Interface
+← User Activity Logs
+
+FROM SYSTEM TO GOVERNMENT DEPARTMENTS (OUTPUTS)
+← Assigned Complaints
+← Complaint Details & Images
+← Escalation Notifications
+← Status Update Confirmations
+← Performance Metrics (Time to resolve, Completion rate)
+← Email/SMS Notifications
+
+================================================================================
+LEVEL 2 FLOWS - COMPLAINT MANAGEMENT (1.2)
+================================================================================
+
+1.2.1: VALIDATE & VERIFY COMPLAINT
+FROM CIVILIAN → Complaint Data (Title, Description, Category)
+DATA STORE → Read Complaint Data (Check duplicates)
+TO NEXT PROCESS → Validated Complaint Data
+← Status: Valid/Invalid
+
+1.2.2: PROCESS LOCATION & MEDIA
+FROM CIVILIAN → Images/Attachments + Location (Manual/GPS)
+PROCESS → Geocode Location + Store Media Files
+DATA STORE → Write Media Files
+TO NEXT PROCESS → Location Coordinates + Media References
+← File Storage Confirmation
+
+1.2.3: CREATE COMPLAINT RECORD
+FROM PROCESS 1.2.2 → Validated Data + Location + Media
+PROCESS → Assign Complaint ID + Set Status (Open) + Timestamp
+DATA STORE → Write New Complaint Record
+TO CIVILIAN ← Complaint ID + Confirmation
+TO NEXT PROCESS → Complaint Record Created
+
+1.2.4: TRACK COMPLAINT STATUS
+FROM CIVILIAN → Complaint ID + Tracking Request
+DATA STORE → Read Complaint Tracking Data
+PROCESS → Retrieve Current Status + Timeline
+TO CIVILIAN ← Current Status + Expected Resolution Date
+← Timeline Information
+
+1.2.5: VIEW COMPLAINT DETAILS
+FROM CIVILIAN → Complaint ID Request
+DATA STORE → Read Complaint Data + Tracking Data
+PROCESS → Fetch All Details (Images, Location, Department, Status)
+TO CIVILIAN ← Complete Complaint Details
+← Assigned Officer Information
+← Department Contact Details
+
+1.2.6: UPDATE COMPLAINT STATUS
+FROM DEPT/ADMIN → New Status (In Progress/Resolved/Closed/Rejected)
+DATA STORE → Read Current Status (Validate Transition)
+PROCESS → Record Update + Timestamp + Notes
+DATA STORE → Write Status Update
+TO NOTIFICATION SERVICE → Trigger Status Update Event
+← Update Confirmed
+
+1.2.7: HANDLE ESCALATION REQUESTS
+FROM DEPT → Escalation Reason + Level
+PROCESS → Validate Escalation + Mark as Escalated
+DATA STORE → Write Escalation Record
+TO ADMIN → Alert: Escalation Received
+← Escalation Confirmed + New Assignment
+
+1.2.8: GENERATE TIMELINE & HISTORY
+FROM ALL UPDATES → All Status Changes + Escalations + Assignments
+PROCESS → Compile Chronological Timeline
+DATA STORE → Write Complete Timeline
+TO CIVILIAN ← Full Timeline (Dates, Actions, Status Changes)
+← History Log
+
+================================================================================
+LEVEL 2 FLOWS - ADMIN OPERATIONS (1.4)
+================================================================================
+
+1.4.1: SEARCH & FILTER COMPLAINTS
+FROM ADMIN → Search Query + Filters (Status, Department, Date, Location)
+DATA STORE → Query Complaint Data with Filters
+PROCESS → Apply Sorting + Pagination
+TO NEXT PROCESS ← Filtered Results List
+
+1.4.2: VIEW COMPLAINT DETAILS
+FROM ADMIN → Selected Complaint ID
+DATA STORE → Read Complaint Data + Tracking Data + Images
+PROCESS → Compile Full Complaint Package
+TO ADMIN ← Complete Details (Images, History, Assigned Dept, Status)
+
+1.4.3: ASSIGN TO DEPARTMENT
+FROM ADMIN → Complaint ID + Target Department
+DATA STORE → Read Department Data (Validate Exists)
+PROCESS → Create Assignment Record + Check Availability
+DATA STORE → Write Assignment
+TO NOTIFICATION SERVICE → Send Dept Assignment Notification
+TO DEPT ← New Complaint Assignment
+← Assignment Confirmed
+
+1.4.4: UPDATE COMPLAINT STATUS
+FROM ADMIN/DEPT → New Status + Timestamp
+DATA STORE → Read Current Status
+PROCESS → Validate Transition Logic + Record Change
+DATA STORE → Write Status Update
+TO NOTIFICATION SERVICE → Send Status Update Event
+TO CIVILIAN ← Status Change Notification
+← Update Confirmed
+
+1.4.5: DELETE/ARCHIVE COMPLAINT
+FROM ADMIN → Delete/Archive Request + Reason
+DATA STORE → Read Complaint Record
+PROCESS → Soft Delete + Log Deletion Reason + Timestamp
+DATA STORE → Mark as Deleted
+TO ADMIN ← Deletion Confirmed
+
+1.4.6: MANAGE DEPARTMENT INFO
+FROM ADMIN/DEPT → Department Details + Officer Info + Contact
+PROCESS → Create/Update Department Profile
+DATA STORE → Read/Write Department Data
+PROCESS → Manage Assigned Officers
+TO ADMIN ← Department Info Updated
+← Officer List Updated
+
+1.4.7: GENERATE ADMIN ANALYTICS
+FROM DATA STORES → All Complaint Data + Tracking Data
+PROCESS → Aggregate Metrics (Total, Resolved, Pending, Avg Time, Dept Breakdown)
+DATA STORE → Write Analytics Results
+TO ADMIN ← Analytics Dashboard
+← Department Performance Report
+← Status Distribution Chart
+← Average Resolution Time Metrics
+
+================================================================================
+LEVEL 2 FLOWS - USER MANAGEMENT (1.1)
+================================================================================
+
+1.1.1: REGISTER NEW USER
+FROM CIVILIAN → Registration Data (Name, Email, Phone, Address)
+DATA STORE → Read User Data (Check if exists)
+PROCESS → Validate Email + Send OTP
+DATA STORE → Write OTP Record
+TO CIVILIAN ← OTP Sent to Email
+← OTP Verification Link
+
+1.1.2: VERIFY OTP
+FROM CIVILIAN → OTP Code
+DATA STORE → Read OTP Record
+PROCESS → Validate OTP + Check Expiry
+TO CIVILIAN ← Verification Status
+← Next Step: Create Password
+
+1.1.3: CREATE PASSWORD & PROFILE
+FROM CIVILIAN → Password + Profile Details
+PROCESS → Hash Password + Set Role (Citizen/Admin)
+DATA STORE → Write User Profile
+TO CIVILIAN ← Registration Successful
+← Login Credentials
+← Welcome Email
+
+1.1.4: USER LOGIN
+FROM CIVILIAN → Email/Phone + Password
+DATA STORE → Read User Data
+PROCESS → Validate Credentials + Check Status
+PROCESS → Generate JWT Token
+TO CIVILIAN ← Auth Token
+← Session Created
+← User Dashboard Access
+
+1.1.5: FORGOT PASSWORD
+FROM CIVILIAN → Email/Phone
+DATA STORE → Read User Data (Find Account)
+PROCESS → Generate Reset Link
+TO CIVILIAN ← Password Reset Link
+← Email with Instructions
+
+1.1.6: RESET PASSWORD
+FROM CIVILIAN → Reset Link + New Password
+DATA STORE → Read Reset Token (Validate + Check Expiry)
+PROCESS → Hash New Password
+DATA STORE → Write New Password
+TO CIVILIAN ← Password Changed
+← Login with New Password
+
+================================================================================
+LEVEL 2 FLOWS - ANALYTICS & REPORTING (1.3)
+================================================================================
+
+1.3.1: COLLECT COMPLAINT DATA
+FROM PROCESS 1.2 → New Complaints + Status Updates + Escalations
+PROCESS → Extract Metrics (Date, Status, Department, Resolution Time)
+DATA STORE → Write Analytics Data
+← Data Collection Complete
+
+1.3.2: CALCULATE REAL-TIME STATISTICS
+FROM DATA STORES → All Complaint Records
+PROCESS → Calculate:
+  - Total Complaints (All time, This month, This week)
+  - Resolved Complaints Count
+  - Pending Complaints Count
+  - Average Resolution Time
+  - Department-wise Distribution
+DATA STORE → Write Calculated Metrics
+TO CIVILIAN ← Real-time Stats Display
+← Stats Updated Every 5 minutes
+
+1.3.3: GENERATE CITIZEN ANALYTICS
+FROM DATA STORES → Public Complaint Data (if public view enabled)
+PROCESS → Aggregate Public Metrics
+PROCESS → Create Charts (Status breakdown, Department wise)
+DATA STORE → Read Analytics Data
+TO CIVILIAN ← Public Analytics Dashboard
+← Charts & Graphs
+← Trend Analysis
+
+1.3.4: GENERATE ADMIN ANALYTICS DASHBOARD
+FROM DATA STORES → All Complaint Data + Tracking Data + Department Data
+PROCESS → Aggregate Full Metrics
+PROCESS → Calculate Performance KPIs:
+  - Total Complaints Received
+  - Resolved vs Pending Ratio
+  - Average Resolution Time by Department
+  - Complaint Status Distribution
+  - Busiest Departments
+  - Escalation Count & Rate
+DATA STORE → Write Dashboard Data
+TO ADMIN ← Full Analytics Dashboard
+← Department Performance Report
+← Comparative Analysis
+← Trend Predictions
+
+1.3.5: EXPORT ANALYTICS REPORTS
+FROM ADMIN → Export Request (PDF/Excel/CSV)
+PROCESS → Format Data
+PROCESS → Generate Report File
+TO ADMIN ← Downloadable Report
+← Email Report (Optional)
+
+================================================================================
+LEVEL 2 FLOWS - NOTIFICATION SERVICE (1.5)
+================================================================================
+
+1.5.1: TRIGGER NOTIFICATION EVENT
+FROM PROCESS 1.2/1.4 → Event (New Complaint, Status Update, Assignment, Escalation)
+PROCESS → Queue Notification Event
+DATA STORE → Write Notification Record
+TO NEXT PROCESS → Event Queued
+← Event ID Generated
+
+1.5.2: FORMAT NOTIFICATION MESSAGE
+FROM NOTIFICATION QUEUE → Event Details
+PROCESS → Select Template (Welcome, Confirmation, Status Update, Alert)
+PROCESS → Fill Template with Data
+PROCESS → Generate Subject + Body
+TO NEXT PROCESS → Formatted Message
+← Message Ready to Send
+
+1.5.3: SEND EMAIL NOTIFICATION
+FROM FORMATTED MESSAGE → Email Content
+PROCESS → Get Recipient Email from User Data
+PROCESS → Send via Email Service (SMTP)
+DATA STORE → Write Email Log
+TO CIVILIAN/ADMIN/DEPT ← Email Received
+← Delivery Confirmation
+
+1.5.4: SEND SMS NOTIFICATION
+FROM FORMATTED MESSAGE → SMS Content
+PROCESS → Get Recipient Phone from User Data
+PROCESS → Send via SMS Gateway
+DATA STORE → Write SMS Log
+TO CIVILIAN/ADMIN/DEPT ← SMS Received
+← Delivery Confirmation
+
+1.5.5: SEND PUSH NOTIFICATION
+FROM FORMATTED MESSAGE → Notification Content
+PROCESS → Get Device Token from User Data
+PROCESS → Send to Push Service (Firebase/OneSignal)
+DATA STORE → Write Push Log
+TO CIVILIAN/ADMIN/DEPT ← Push Notification Received
+← Delivery Confirmation
+
+1.5.6: MAINTAIN NOTIFICATION LOG
+FROM ALL NOTIFICATIONS → All Sent Messages
+PROCESS → Log Channel (Email/SMS/Push)
+PROCESS → Log Status (Sent, Delivered, Failed, Read)
+PROCESS → Log Timestamp + Recipient
+DATA STORE → Write Complete Notification History
+← Historical Record Maintained
+
+================================================================================
+END OF DFD FLOWS
+================================================================================
+
+================================================================================
+ENTITY RELATIONSHIP DIAGRAM (ERD) - SIMPLIFIED
+================================================================================
+
+================================================================================
+CORE ENTITIES
+================================================================================
+
+ENTITY: User
+Primary Key: user_id (UUID)
+Attributes:
+- user_id: UUID (PK)
+- email: String (UNIQUE)
+- phone: String (UNIQUE)
+- password_hash: String
+- first_name: String
+- last_name: String
+- address: String
+- city: String
+- role: Enum (CITIZEN, ADMIN, OFFICER)
+- status: Enum (ACTIVE, INACTIVE, DELETED)
+- created_at: Timestamp
+- updated_at: Timestamp
+
+---
+
+ENTITY: Department
+Primary Key: department_id (UUID)
+Attributes:
+- department_id: UUID (PK)
+- name: String (UNIQUE)
+- email: String
+- phone: String
+- address: String
+- city: String
+- status: Enum (ACTIVE, INACTIVE)
+- created_at: Timestamp
+- updated_at: Timestamp
+
+---
+
+ENTITY: Complaint
+Primary Key: complaint_id (UUID)
+Attributes:
+- complaint_id: UUID (PK)
+- citizen_id: UUID (FK to User)
+- department_id: UUID (FK to Department, NULLABLE)
+- assigned_officer_id: UUID (FK to User, NULLABLE)
+- title: String
+- description: Text
+- category: String
+- latitude: Float
+- longitude: Float
+- address: String
+- priority: Enum (LOW, MEDIUM, HIGH, URGENT)
+- status: Enum (OPEN, IN_PROGRESS, RESOLVED, CLOSED, REJECTED, ESCALATED)
+- resolution_details: Text
+- created_at: Timestamp
+- updated_at: Timestamp
+- resolved_at: Timestamp (NULLABLE)
+
+Foreign Keys:
+- citizen_id → User(user_id)
+- department_id → Department(department_id)
+- assigned_officer_id → User(user_id) [where role=OFFICER]
+
+---
+
+ENTITY: ComplaintHistory
+Primary Key: history_id (UUID)
+Attributes:
+- history_id: UUID (PK)
+- complaint_id: UUID (FK to Complaint)
+- previous_status: String
+- new_status: String
+- changed_by: UUID (FK to User)
+- reason: Text
+- created_at: Timestamp
+
+Foreign Keys:
+- complaint_id → Complaint(complaint_id)
+- changed_by → User(user_id)
+
+---
+
+ENTITY: Feedback
+Primary Key: feedback_id (UUID)
+Attributes:
+- feedback_id: UUID (PK)
+- complaint_id: UUID (FK to Complaint)
+- user_id: UUID (FK to User)
+- rating: Integer (1-5)
+- comment: Text
+- created_at: Timestamp
+
+Foreign Keys:
+- complaint_id → Complaint(complaint_id)
+- user_id → User(user_id)
+
+---
+
+ENTITY: Notification
+Primary Key: notification_id (UUID)
+Attributes:
+- notification_id: UUID (PK)
+- user_id: UUID (FK to User)
+- complaint_id: UUID (FK to Complaint, NULLABLE)
+- type: Enum (STATUS_UPDATE, ASSIGNMENT, ESCALATION, WELCOME)
+- title: String
+- message: Text
+- channel: Enum (EMAIL, SMS, PUSH)
+- status: Enum (PENDING, SENT, DELIVERED, READ)
+- created_at: Timestamp
+- sent_at: Timestamp (NULLABLE)
+
+Foreign Keys:
+- user_id → User(user_id)
+- complaint_id → Complaint(complaint_id)
+
+================================================================================
+RELATIONSHIPS & CARDINALITY
+================================================================================
+
+1. User (Citizen) ↔ Complaint: ONE-TO-MANY
+   Cardinality: (1) → (*)
+   A citizen creates many complaints
+
+2. Department ↔ Complaint: ONE-TO-MANY
+   Cardinality: (1) → (*)
+   A department handles many complaints
+
+3. User (Officer) ↔ Complaint: ONE-TO-MANY
+   Cardinality: (1) → (*)
+   An officer handles many complaints
+
+4. Complaint ↔ ComplaintHistory: ONE-TO-MANY
+   Cardinality: (1) → (*)
+   Each complaint has multiple status updates
+
+5. Complaint ↔ Feedback: ONE-TO-MANY
+   Cardinality: (1) → (*)
+   Each complaint receives feedback
+
+6. User ↔ Feedback: ONE-TO-MANY
+   Cardinality: (1) → (*)
+   Users provide feedback
+
+7. User ↔ Notification: ONE-TO-MANY
+   Cardinality: (1) → (*)
+   Users receive multiple notifications
+
+8. Complaint ↔ Notification: ONE-TO-MANY
+   Cardinality: (1) → (*)
+   Complaints trigger notifications
+
+================================================================================
+SIMPLIFIED ENTITY DIAGRAM STRUCTURE
+================================================================================
+
+User (Base Entity)
+├── Roles: CITIZEN, ADMIN, OFFICER
+├── Relations:
+│   ├── Creates: Complaint
+│   ├── Handles: Complaint (if OFFICER)
+│   ├── Receives: Notification
+│   ├── Provides: Feedback
+│   └── Updates: ComplaintHistory
+
+Department (Base Entity)
+├── Relations:
+│   └── Receives: Complaint
+│   └── Managed by: Admin User
+
+Complaint (Transaction Entity)
+├── Relations:
+│   ├── Created by: User (CITIZEN)
+│   ├── Assigned to: Department
+│   ├── Handled by: User (OFFICER)
+│   ├── Has: ComplaintHistory (Status Changes)
+│   ├── Receives: Feedback
+│   └── Triggers: Notification
+
+ComplaintHistory (Audit Trail)
+├── Relations:
+│   ├── Belongs to: Complaint
+│   └── Updated by: User
+
+Feedback (Rating Entity)
+├── Relations:
+│   ├── For: Complaint
+│   └── From: User (CITIZEN)
+
+Notification (Communication Entity)
+├── Relations:
+│   ├── To: User
+│   └── About: Complaint
+
+================================================================================
+KEY PRINCIPLES
+================================================================================
+
+1. User Entity covers all roles (CITIZEN, ADMIN, OFFICER)
+   - No separate Officer table needed
+   - Role-based filtering in queries
+
+2. Complaint is the central transaction
+   - Links Users (Citizen + Officer), Department
+   - Status tracked in ComplaintHistory
+   - Notifications triggered from Complaint events
+
+3. ComplaintHistory replaces Escalation table
+   - ESCALATED is a status in Complaint
+   - Status transitions logged in history
+
+4. Minimal Foreign Keys
+   - Reduced complexity
+   - Easier to visualize and implement
+
+5. Core Flows Remain:
+   - Citizen creates Complaint
+   - Admin assigns to Department
+   - Officer handles & updates status
+   - Notifications sent on changes
+   - Feedback collected on resolution
+================================================================================
+END OF ERD
+================================================================================

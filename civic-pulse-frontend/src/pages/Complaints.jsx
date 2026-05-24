@@ -1,48 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react'
 import TopBar from '../components/shared/TopBar'
-
-const mockComplaints = [
-    {
-        id: 'CMP-2847',
-        title: 'Severe pothole causing vehicle damage',
-        type: 'pothole',
-        location: 'Main Street & 5th Avenue',
-        status: 'urgent',
-        priority: 'high',
-        date: '2024-02-23T10:00:00.000Z',
-        description: 'Large pothole approximately 2 feet wide and 6 inches deep. Multiple vehicles have been damaged. Several residents have reported flat tires.',
-        assignee: 'Crew Alpha',
-        upvotes: 47,
-        comments: 12,
-        image: null,
-    },
-    {
-        id: 'CMP-2846',
-        title: 'Broken streetlight at Central Park',
-        type: 'streetlight',
-        location: 'Central Park, North Entrance',
-        status: 'in-progress',
-        priority: 'medium',
-        date: '2024-02-23T08:00:00.000Z',
-        description: 'The main streetlight at the north entrance has been flickering for a week and is now completely out. Safety concern for evening visitors.',
-        assignee: 'Electric Team B',
-        upvotes: 23,
-        comments: 5,
-    },
-    {
-        id: 'CMP-2845',
-        title: 'Overflowing garbage bins on Market St',
-        type: 'garbage',
-        location: 'Market Street, Block 7',
-        status: 'pending',
-        priority: 'medium',
-        date: '2024-02-23T05:00:00.000Z',
-        description: 'Multiple garbage bins overflowing. Waste spilling onto sidewalk. Strong odor affecting nearby businesses and residents.',
-        assignee: null,
-        upvotes: 34,
-        comments: 8,
-    },
-]
+import { useRole } from '../context/RoleContext'
+import { updateComplaint } from '../services/complaintService'
+import { getAllComplaints } from '../services/complaintService'
 
 function TiltCard3D({ children, className = '' }) {
     const cardRef = useRef(null)
@@ -84,7 +44,7 @@ function TiltCard3D({ children, className = '' }) {
     )
 }
 
-function ComplaintCard({ complaint, index }) {
+function ComplaintCard({ complaint, index, isAdmin, onStatusUpdate }) {
     const [expanded, setExpanded] = useState(false)
 
     const typeIcons = {
@@ -120,7 +80,7 @@ function ComplaintCard({ complaint, index }) {
                 style={{ animationDelay: `${index * 100}ms` }}
                 onClick={() => setExpanded(!expanded)}
             >
-                {/* Top accent line */}
+
                 <div className={`h-1 w-full ${complaint.status === 'urgent' ? 'bg-gradient-to-r from-red-400 to-orange-400' :
                     complaint.status === 'in-progress' ? 'bg-gradient-to-r from-blue-400 to-indigo-400' :
                         complaint.status === 'resolved' ? 'bg-gradient-to-r from-emerald-400 to-teal-400' :
@@ -128,7 +88,7 @@ function ComplaintCard({ complaint, index }) {
                     }`} />
 
                 <div className="p-5">
-                    {/* Header */}
+
                     <div className="flex items-start gap-4 mb-3">
                         <div className="w-11 h-11 rounded-xl bg-white/80 shadow-sm flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
                             {typeIcons[complaint.type] || '📋'}
@@ -145,14 +105,12 @@ function ComplaintCard({ complaint, index }) {
                             </h3>
                         </div>
 
-                        {/* Status Badge */}
                         <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border ${sc.bg} ${sc.text} ${sc.border} badge-float flex-shrink-0`}>
                             <div className={`w-1.5 h-1.5 rounded-full ${sc.dot} ${complaint.status === 'urgent' ? 'pulse-glow' : ''}`} />
                             {sc.label}
                         </div>
                     </div>
 
-                    {/* Location */}
                     <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-3 ml-[60px]">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -161,7 +119,6 @@ function ComplaintCard({ complaint, index }) {
                         <span className="font-medium truncate">{complaint.location}</span>
                     </div>
 
-                    {/* Expanded Content */}
                     {expanded && (
                         <div className="mt-4 pt-4 border-t border-slate-100/80 animate-slide-up ml-[60px]">
                             <p className="text-sm text-slate-600 leading-relaxed mb-4">
@@ -182,10 +139,33 @@ function ComplaintCard({ complaint, index }) {
                                     </div>
                                 )}
                             </div>
+
+                            {isAdmin && expanded && (
+                                <div
+                                    className="mt-4 flex flex-wrap items-center gap-3"
+                                    onClick={(e) => e.stopPropagation()}
+                                    onMouseDown={(e) => e.stopPropagation()}
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Admin status</span>
+                                        <select
+                                            value={complaint.backendStatus}
+                                            onChange={(e) => onStatusUpdate(complaint.id, e.target.value)}
+                                            onClick={(e) => e.stopPropagation()}
+                                            onMouseDown={(e) => e.stopPropagation()}
+                                            className="px-3 py-2 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-700"
+                                        >
+                                            {/* These values must match the backend enum exactly. */}
+                                            <option value="Pending">Pending</option>
+                                            <option value="In Progress">In Progress</option>
+                                            <option value="Resolved">Resolved</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
 
-                    {/* Footer */}
                     <div className="flex items-center justify-between mt-3 ml-[60px]">
                         <div className="flex items-center gap-4">
                             <button className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-emerald-600 transition-colors group/btn">
@@ -217,14 +197,71 @@ function ComplaintCard({ complaint, index }) {
 }
 
 export default function Complaints() {
+    const { role } = useRole()
     const [allComplaints, setAllComplaints] = useState([])
     const [filter, setFilter] = useState('all')
     const [searchQuery, setSearchQuery] = useState('')
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState('')
 
     useEffect(() => {
-        const stored = JSON.parse(localStorage.getItem('complaints') || '[]')
-        setAllComplaints([...mockComplaints, ...stored].reverse())
+        const fetchComplaints = async () => {
+            try {
+                const response = await getAllComplaints()
+                const complaints = response.data.complaints
+
+                setAllComplaints(
+                    complaints.map((complaint) => ({
+                        id: complaint.complaintId,
+                        title: complaint.complaintType,
+                        type: complaint.complaintType,
+                        location: complaint.location?.address
+                            || (complaint.location?.latitude && complaint.location?.longitude
+                                ? `${complaint.location.latitude.toFixed(4)}°, ${complaint.location.longitude.toFixed(4)}°`
+                                : 'Location not available'),
+                        status: complaint.priority === 'High'
+                            ? 'urgent'
+                            : complaint.status === 'In Progress'
+                                ? 'in-progress'
+                                : complaint.status.toLowerCase(),
+                        backendStatus: complaint.status,
+                        priority: complaint.priority ? complaint.priority.toLowerCase() : 'medium',
+                        date: complaint.createdAt,
+                        description: complaint.description,
+                        assignee: complaint.assignedTo?.name || null,
+                        upvotes: 0,
+                        comments: 0,
+                        image: complaint.image || null,
+                    }))
+                )
+            } catch (err) {
+                setError(err.message || 'Failed to load complaints')
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchComplaints()
     }, [])
+
+    const handleStatusUpdate = async (complaintId, newStatus) => {
+        try {
+            await updateComplaint(complaintId, { status: newStatus })
+
+            // Update the local copy immediately so the card reflects the admin action without waiting for a refetch.
+            setAllComplaints(prev => prev.map((complaint) => {
+                if (complaint.id !== complaintId) return complaint
+
+                return {
+                    ...complaint,
+                    backendStatus: newStatus,
+                    status: newStatus === 'In Progress' ? 'in-progress' : newStatus.toLowerCase()
+                }
+            }))
+        } catch (err) {
+            alert(err.message || 'Failed to update complaint status')
+        }
+    }
 
     const filters = [
         { id: 'all', label: 'All Complaints', count: allComplaints.length },
@@ -247,7 +284,6 @@ export default function Complaints() {
                 subtitle="Manage and track all civic complaints"
             />
 
-            {/* Filter Bar */}
             <div className="glass rounded-2xl shadow-float p-4 mb-6 flex items-center gap-3 flex-wrap">
                 {filters.map((f) => (
                     <button
@@ -284,14 +320,31 @@ export default function Complaints() {
                 </div>
             </div>
 
-            {/* Complaints Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                 {filtered.map((complaint, index) => (
-                    <ComplaintCard key={complaint.id} complaint={complaint} index={index} />
+                    <ComplaintCard
+                        key={complaint.id}
+                        complaint={complaint}
+                        index={index}
+                        isAdmin={role === 'admin'}
+                        onStatusUpdate={handleStatusUpdate}
+                    />
                 ))}
             </div>
 
-            {filtered.length === 0 && (
+            {loading && (
+                <div className="text-center py-20 glass rounded-2xl shadow-float">
+                    <p className="text-sm text-slate-400">Loading complaints from the database...</p>
+                </div>
+            )}
+
+            {error && !loading && (
+                <div className="text-center py-20 glass rounded-2xl shadow-float border border-red-100">
+                    <p className="text-sm text-red-600 font-semibold">{error}</p>
+                </div>
+            )}
+
+            {!loading && !error && filtered.length === 0 && (
                 <div className="text-center py-20 glass rounded-2xl shadow-float">
                     <div className="text-5xl mb-4 float-smooth">🔍</div>
                     <h3 className="font-display text-xl font-bold text-slate-600 mb-2">No complaints found</h3>
@@ -301,4 +354,3 @@ export default function Complaints() {
         </div>
     )
 }
-

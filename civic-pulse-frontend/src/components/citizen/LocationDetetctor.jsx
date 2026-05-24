@@ -41,7 +41,7 @@ function LocationDetector({ onLocationDetect, latitude, longitude }) {
         <span>Location</span>
         <span className="px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs font-bold">Optional</span>
       </label>
-      
+
       <div className="flex space-x-3">
         <div className="flex-1 relative">
           <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -58,7 +58,7 @@ function LocationDetector({ onLocationDetect, latitude, longitude }) {
             </div>
           )}
         </div>
-        
+
         <button
           type="button"
           onClick={detectLocation}
@@ -89,7 +89,7 @@ function LocationDetector({ onLocationDetect, latitude, longitude }) {
           )}
         </button>
       </div>
-      
+
       {error && (
         <div className="mt-3 flex items-center space-x-2 text-red-600 bg-red-50 p-3 rounded-xl animate-slide-up">
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">

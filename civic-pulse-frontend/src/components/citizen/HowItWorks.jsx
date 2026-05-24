@@ -37,7 +37,7 @@ function HowItWorks() {
 
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {steps.map((step, index) => (
-            <div 
+            <div
               key={index}
               className="relative group"
             >
@@ -45,18 +45,18 @@ function HowItWorks() {
               {index < steps.length - 1 && (
                 <div className="hidden md:block absolute top-16 left-full w-full h-0.5 bg-gradient-to-r from-primary-300 to-transparent -z-10"></div>
               )}
-              
+
               <div className="card p-8 text-center relative overflow-hidden">
                 {/* Step Number */}
                 <div className="absolute top-4 right-4 text-6xl font-bold text-gray-100 group-hover:text-primary-100 transition-colors">
                   {index + 1}
                 </div>
-                
+
                 {/* Icon */}
                 <div className={`inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br ${step.color} text-white rounded-2xl shadow-lg mb-6 transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
                   {step.icon}
                 </div>
-                
+
                 {/* Content */}
                 <h3 className="text-2xl font-bold text-gray-800 mb-3">
                   {step.title}

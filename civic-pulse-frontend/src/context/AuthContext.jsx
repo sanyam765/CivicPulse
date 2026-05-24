@@ -1,76 +1,159 @@
-import React, { createContext, useState, useContext, useEffect } from 'react'
+
+
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { login as loginService, logout as logoutService, getCurrentUser } from '../services/authService'
 
 const AuthContext = createContext()
+
 
 export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [admin, setAdmin] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true)  // Add loading state
   const navigate = useNavigate()
 
-  // Check if user is already logged in (on page load)
-  useEffect(() => {
-    const token = localStorage.getItem('adminToken')
-    const adminData = localStorage.getItem('adminData')
-    
-    if (token && adminData) {
-      setIsAuthenticated(true)
-      setAdmin(JSON.parse(adminData))
+
+  const syncAuth = useCallback(async ({ withLoading = false } = {}) => {
+    if (withLoading) setLoading(true)
+
+    const token = localStorage.getItem('token')
+
+    if (!token) {
+      setIsAuthenticated(false)
+      setAdmin(null)
+      if (withLoading) setLoading(false)
+      return
     }
-    setLoading(false)
+
+    try {
+      const response = await getCurrentUser()
+      const user = response.data.user
+
+      setAdmin(user)
+      setIsAuthenticated(true)
+
+    
+      localStorage.setItem('user', JSON.stringify(user))
+    } catch (error) {
+      console.error('Token validation failed:', error.message)
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      setIsAuthenticated(false)
+      setAdmin(null)
+    } finally {
+      if (withLoading) setLoading(false)
+    }
   }, [])
 
-  // Login function
-  const login = (email, password) => {
-    // Mock authentication (will connect to backend later)
-    if (email === 'admin@test.com' && password === 'password123') {
-      const mockAdmin = {
-        id: '1',
-        name: 'Admin User',
-        email: email,
-        department: 'Municipal Services'
+
+  useEffect(() => {
+    syncAuth({ withLoading: true })
+  }, [syncAuth])
+
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        syncAuth()
       }
-      
-      // Store in localStorage
-      localStorage.setItem('adminToken', 'mock-jwt-token-12345')
-      localStorage.setItem('adminData', JSON.stringify(mockAdmin))
-      
+    }, 15000)
+
+    const handleWindowFocus = () => {
+      syncAuth()
+    }
+
+    const handleStorageChange = (event) => {
+      if (event.key === 'token' || event.key === 'user') {
+        syncAuth()
+      }
+    }
+
+    window.addEventListener('focus', handleWindowFocus)
+    window.addEventListener('storage', handleStorageChange)
+
+    return () => {
+      clearInterval(intervalId)
+      window.removeEventListener('focus', handleWindowFocus)
+      window.removeEventListener('storage', handleStorageChange)
+    }
+  }, [syncAuth])
+
+
+  const login = async (email, password) => {
+    try {
+      // Call backend API
+      const response = await loginService({ email, password })
+
+
+
+      const { user, token } = response.data
+
+    
+      localStorage.setItem('token', token)
+      localStorage.setItem('user', JSON.stringify(user))
+
+      // Update state
+      setAdmin(user)
       setIsAuthenticated(true)
-      setAdmin(mockAdmin)
+
+      // Navigate to dashboard
       navigate('/admin/dashboard')
-      
+
       return { success: true }
-    } else {
-      return { success: false, message: 'Invalid credentials' }
+
+    } catch (error) {
+      console.error('Login error:', error.message)
+      return {
+        success: false,
+        message: error.message
+      }
     }
   }
 
-  // Logout function
+  // ─────────────────────────────────────────────────────────
+  // LOGOUT FUNCTION
+  // ─────────────────────────────────────────────────────────
   const logout = () => {
-    localStorage.removeItem('adminToken')
-    localStorage.removeItem('adminData')
-    setIsAuthenticated(false)
+    // Clear localStorage
+    logoutService()
+
+    // Clear state
     setAdmin(null)
+    setIsAuthenticated(false)
+
+    // Navigate to login
     navigate('/admin/login')
   }
 
+  // ─────────────────────────────────────────────────────────
+  // PROVIDE VALUES TO ALL CHILDREN
+  // ─────────────────────────────────────────────────────────
   const value = {
     isAuthenticated,
     admin,
+    loading,  // Expose loading state
+    refreshAuth: syncAuth,
     login,
-    logout,
-    loading
+    logout
   }
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  )
 }
 
-// Custom hook to use auth context
+// ───────────────────────────────────────────────────────────
+// CUSTOM HOOK TO USE AUTH CONTEXT
+// ───────────────────────────────────────────────────────────
 export function useAuth() {
   const context = useContext(AuthContext)
+
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider')
+    throw new Error('useAuth must be used within AuthProvider')
   }
+
   return context
 }

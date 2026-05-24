@@ -1,108 +1,136 @@
-import React from 'react'
-import { FileText, Clock, CheckCircle, AlertCircle } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { getMyComplaints } from '../services/complaintService'
+import { Calendar, MapPin } from 'lucide-react'
 
-function MyComplaints() {
-  // Mock data (will come from backend later)
-  const mockComplaints = [
-    {
-      id: 'CMP-123456',
-      type: 'Pothole',
-      description: 'Large pothole on Main Street near park',
-      status: 'In Progress',
-      date: '2024-02-10',
-    },
-    {
-      id: 'CMP-123455',
-      type: 'Streetlight',
-      description: 'Streetlight not working for 3 days',
-      status: 'Resolved',
-      date: '2024-02-08',
-    },
-    {
-      id: 'CMP-123454',
-      type: 'Garbage',
-      description: 'Garbage not collected for a week',
-      status: 'Pending',
-      date: '2024-02-12',
-    },
-  ]
-
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-5xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-primary-800 mb-2">
-            All Complaints
-          </h1>
-          <p className="text-lg text-gray-600">
-            View all submitted complaints and their current status
-          </p>
-        </div>
-
-        {/* Complaints Grid */}
-        <div className="grid gap-6">
-          {mockComplaints.map((complaint) => (
-            <ComplaintCard key={complaint.id} complaint={complaint} />
-          ))}
-        </div>
-      </div>
-    </div>
-  )
+const getImageUrl = (imagePath) => {
+  if (!imagePath) return null
+  if (imagePath.startsWith('http')) return imagePath
+  return `http://localhost:5000/${imagePath.replace(/\\/g, '/')}`
 }
 
-// Complaint Card Component
-function ComplaintCard({ complaint }) {
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'Pending':
-        return <Clock className="w-5 h-5" />
-      case 'In Progress':
-        return <AlertCircle className="w-5 h-5" />
-      case 'Resolved':
-        return <CheckCircle className="w-5 h-5" />
-      default:
-        return <FileText className="w-5 h-5" />
+function MyComplaints() {
+  const [complaints, setComplaints] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  // Fetch complaints on component mount
+  useEffect(() => {
+    fetchComplaints()
+  }, [])
+
+  const fetchComplaints = async () => {
+    try {
+      const response = await getMyComplaints()
+      setComplaints(response.data.complaints)
+    } catch (error) {
+      setError(error.message || 'Failed to load complaints')
+    } finally {
+      setLoading(false)
     }
   }
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Pending':
-        return 'bg-yellow-100 text-yellow-700 border-yellow-200'
-      case 'In Progress':
-        return 'bg-blue-100 text-blue-700 border-blue-200'
-      case 'Resolved':
-        return 'bg-green-100 text-green-700 border-green-200'
-      default:
-        return 'bg-gray-100 text-gray-700 border-gray-200'
+      case 'Pending': return 'bg-amber-100 text-amber-700'
+      case 'In Progress': return 'bg-blue-100 text-blue-700'
+      case 'Resolved': return 'bg-green-100 text-green-700'
+      default: return 'bg-gray-100 text-gray-700'
     }
   }
 
-  return (
-    <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow">
-      <div className="flex items-start justify-between mb-4">
-        <div>
-          <div className="flex items-center space-x-3 mb-2">
-            <h3 className="text-xl font-semibold text-gray-800">
-              {complaint.type}
-            </h3>
-            <span className={`px-3 py-1 rounded-full text-sm font-medium border flex items-center space-x-1 ${getStatusColor(complaint.status)}`}>
-              {getStatusIcon(complaint.status)}
-              <span>{complaint.status}</span>
-            </span>
-          </div>
-          <p className="text-sm text-gray-500 font-mono">{complaint.id}</p>
-        </div>
-        <div className="text-right text-sm text-gray-500">
-          {new Date(complaint.date).toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-          })}
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 font-medium">Loading complaints...</p>
         </div>
       </div>
-      <p className="text-gray-600">{complaint.description}</p>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white pt-20 pb-10 px-6">
+      <div className="max-w-6xl mx-auto">
+        
+        {/* Header */}
+        <h1 className="text-5xl font-black text-gray-900 mb-4">All Complaints</h1>
+        <p className="text-xl text-gray-600 mb-8">
+          Total: {complaints.length} complaints
+        </p>
+
+        {/* Error */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+            <p className="text-red-700 font-medium">{error}</p>
+          </div>
+        )}
+
+        {/* Complaints Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {complaints.map((complaint) => (
+            <div key={complaint._id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all">
+              
+              {/* Image */}
+              {complaint.image && (
+                <img
+                  src={getImageUrl(complaint.image)}
+                  alt="Complaint"
+                  className="w-full h-48 object-cover"
+                />
+              )}
+
+              {/* Content */}
+              <div className="p-6">
+                
+                {/* Status */}
+                <span className={`inline-block px-3 py-1 rounded-lg text-sm font-bold mb-3 ${getStatusColor(complaint.status)}`}>
+                  {complaint.status}
+                </span>
+
+                {/* Type */}
+                <h3 className="text-xl font-black text-gray-900 mb-2 capitalize">
+                  {complaint.complaintType}
+                </h3>
+
+                {/* Description */}
+                <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                  {complaint.description}
+                </p>
+
+                {/* Meta */}
+                <div className="space-y-2 text-sm text-gray-500">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    <span>{new Date(complaint.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  
+                  {complaint.location && (
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4" />
+                      <span className="text-xs">
+                        {complaint.location.latitude.toFixed(2)}, {complaint.location.longitude.toFixed(2)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* ID */}
+                <div className="mt-4 pt-4 border-t border-gray-100">
+                  <p className="text-xs text-gray-400">ID: {complaint.complaintId}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Empty State */}
+        {complaints.length === 0 && !error && (
+          <div className="text-center py-20">
+            <p className="text-2xl font-bold text-gray-400">No complaints yet</p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

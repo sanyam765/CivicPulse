@@ -14,23 +14,17 @@ export function RoleProvider({ children }) {
         return data ? JSON.parse(data) : null
     })
 
-    const login = (userData, userRole) => {
+    const login = (userData, userRole, token) => {
         setRole(userRole)
         setIsLoggedIn(true)
         setUser(userData)
         localStorage.setItem('civicpulse_role', userRole)
         localStorage.setItem('civicpulse_logged_in', 'true')
         localStorage.setItem('civicpulse_user', JSON.stringify(userData))
-    }
-
-    const switchToAdmin = () => {
-        setRole('admin')
-        localStorage.setItem('civicpulse_role', 'admin')
-    }
-
-    const switchToCitizen = () => {
-        setRole('citizen')
-        localStorage.setItem('civicpulse_role', 'citizen')
+        if (token) {
+            localStorage.setItem('token', token)
+            localStorage.setItem('user', JSON.stringify(userData))
+        }
     }
 
     const logout = () => {
@@ -42,10 +36,12 @@ export function RoleProvider({ children }) {
         localStorage.removeItem('civicpulse_user')
         localStorage.removeItem('adminToken')
         localStorage.removeItem('adminData')
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
     }
 
     return (
-        <RoleContext.Provider value={{ role, isLoggedIn, user, login, switchToAdmin, switchToCitizen, logout }}>
+        <RoleContext.Provider value={{ role, isLoggedIn, user, login,  logout }}>
             {children}
         </RoleContext.Provider>
     )

@@ -1,37 +1,48 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import TopBar from '../components/shared/TopBar'
+import { getAllComplaints } from '../services/complaintService'
+const toTitle = (complaint) => {
+    const base = complaint.complaintType || 'issue'
+    return `${base.charAt(0).toUpperCase() + base.slice(1)} complaint ${complaint.status === 'Resolved' ? 'resolved' : 'updated'}`
+}
 
-const timelineData = [
-    {
-        id: 1,
-        date: 'Today',
-        events: [
-            { id: 'e1', time: '2:30 PM', type: 'resolved', title: 'Storm drain cleared on Riverside Dr', category: 'drainage', assignee: 'Drainage Team C', description: 'Successfully cleared debris blocking storm drain. Normal flow restored.' },
-            { id: 'e2', time: '1:15 PM', type: 'assigned', title: 'Crew dispatched for water leak', category: 'water', assignee: 'Water Department', description: 'Emergency crew dispatched to Oak Residence Complex for water main repair.' },
-            { id: 'e3', time: '11:45 AM', type: 'submitted', title: 'New complaint: Pothole on Main St', category: 'pothole', assignee: null, description: 'Citizen reported severe pothole causing vehicle damage. 15 upvotes in 2 hours.' },
-            { id: 'e4', time: '10:00 AM', type: 'updated', title: 'Streetlight repair in progress', category: 'streetlight', assignee: 'Electric Team B', description: 'Parts ordered. Expected completion by tomorrow evening.' },
-        ],
-    },
-    {
-        id: 2,
-        date: 'Yesterday',
-        events: [
-            { id: 'e5', time: '5:30 PM', type: 'resolved', title: 'Garbage collection completed', category: 'garbage', assignee: 'Sanitation Team A', description: 'All overflowing bins on Market Street cleared. Extra collection scheduled.' },
-            { id: 'e6', time: '3:00 PM', type: 'escalated', title: 'Pedestrian signal failure escalated', category: 'streetlight', assignee: 'Signal Team A', description: 'Priority upgraded to urgent due to proximity to school zone.' },
-            { id: 'e7', time: '12:00 PM', type: 'assigned', title: 'Road repair crew assigned', category: 'road', assignee: 'Road Team Delta', description: 'Team assigned for Highway 12 surface repair. Equipment mobilization started.' },
-            { id: 'e8', time: '9:30 AM', type: 'submitted', title: 'Illegal dumping reported', category: 'garbage', assignee: null, description: 'Large-scale illegal dumping near River Valley Park river bank.' },
-        ],
-    },
-    {
-        id: 3,
-        date: '2 Days Ago',
-        events: [
-            { id: 'e9', time: '4:00 PM', type: 'resolved', title: 'Speed bump repaired', category: 'road', assignee: 'Road Team Alpha', description: 'Damaged speed bump replaced with new reinforced unit.' },
-            { id: 'e10', time: '2:15 PM', type: 'updated', title: 'Water tanker deployed', category: 'water', assignee: 'Water Department', description: 'Temporary water tanker stationed at Oak Residence Complex.' },
-            { id: 'e11', time: '10:00 AM', type: 'submitted', title: 'Dark alley safety concern', category: 'streetlight', assignee: null, description: 'Multiple streetlights out in residential alley. Safety hazard reported.' },
-        ],
-    },
-]
+const toEventType = (complaint) => {
+    if (complaint.status === 'Resolved') return 'resolved'
+    if (complaint.status === 'In Progress') return 'updated'
+    return 'submitted'
+}
+
+const toTimelineData = (complaints) => {
+    const events = complaints.map((complaint) => {
+        const eventDate = complaint.resolvedAt || complaint.updatedAt || complaint.createdAt
+        const date = new Date(eventDate)
+        return {
+            id: complaint.complaintId || complaint._id,
+            dateKey: date.toDateString(),
+            dateLabel: date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }),
+            time: date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+            type: toEventType(complaint),
+            title: toTitle(complaint),
+            category: complaint.complaintType || 'other',
+            assignee: complaint.assignedTo?.name || null,
+            description: complaint.description || 'No details provided.',
+        }
+    })
+
+    const grouped = events.reduce((acc, event) => {
+        if (!acc[event.dateKey]) {
+            acc[event.dateKey] = {
+                id: event.dateKey,
+                date: event.dateLabel,
+                events: [],
+            }
+        }
+        acc[event.dateKey].events.push(event)
+        return acc
+    }, {})
+
+    return Object.values(grouped).sort((a, b) => new Date(b.id) - new Date(a.id))
+}
 
 const eventTypeConfig = {
     submitted: {
@@ -108,10 +119,9 @@ function TimelineEvent({ event, index }) {
 
     return (
         <div className="relative flex gap-4 group" style={{ animationDelay: `${index * 100}ms` }}>
-            {/* Timeline line */}
+
             <div className="absolute left-[19px] top-10 bottom-0 w-[2px] bg-gradient-to-b from-slate-200 to-transparent" />
 
-            {/* Floating Marker */}
             <div className="relative z-10 flex-shrink-0 mt-1">
                 <div
                     className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg float-gentle"
@@ -126,7 +136,6 @@ function TimelineEvent({ event, index }) {
                 </div>
             </div>
 
-            {/* Content Card */}
             <div
                 className="flex-1 glass rounded-xl p-4 mb-4 shadow-sm hover:shadow-float transition-all duration-300 cursor-pointer spring-hover group-hover:bg-white/70"
                 onClick={() => setExpanded(!expanded)}
@@ -180,18 +189,50 @@ function TimelineEvent({ event, index }) {
 
 export default function Timeline() {
     const [typeFilter, setTypeFilter] = useState('all')
+    const [timelineData, setTimelineData] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState('')
+
+    useEffect(() => {
+        const fetchTimeline = async () => {
+            try {
+                const response = await getAllComplaints()
+                const complaints = response?.data?.complaints || []
+                setTimelineData(toTimelineData(complaints))
+                setError('')
+            } catch (err) {
+                setError(err.message || 'Failed to load timeline')
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchTimeline()
+        const interval = setInterval(fetchTimeline, 15000)
+        return () => clearInterval(interval)
+    }, [])
 
     return (
         <div className="animate-fade-in">
             <TopBar
                 title="Timeline"
-                subtitle="Complaint resolution timeline with floating markers"
+                subtitle="Live timeline refreshed every 15 seconds"
             />
+            {loading && (
+                <div className="mb-4 glass rounded-2xl p-3 text-sm text-slate-500">
+                    Loading timeline...
+                </div>
+            )}
+            {error && !loading && (
+                <div className="mb-4 glass rounded-2xl p-3 text-sm text-red-600">
+                    {error}
+                </div>
+            )}
 
             <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
-                {/* Timeline */}
+
                 <div className="xl:col-span-3">
-                    {/* Filter */}
+
                     <div className="glass rounded-2xl shadow-float p-4 mb-6 flex items-center gap-2 flex-wrap">
                         <button
                             onClick={() => setTypeFilter('all')}
@@ -214,7 +255,6 @@ export default function Timeline() {
                         ))}
                     </div>
 
-                    {/* Timeline Days */}
                     {timelineData.map((day) => {
                         const filteredEvents = typeFilter === 'all'
                             ? day.events
@@ -224,7 +264,7 @@ export default function Timeline() {
 
                         return (
                             <div key={day.id} className="mb-8">
-                                {/* Day Header */}
+
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="glass-strong rounded-xl px-4 py-2 shadow-sm levitate" style={{ animationDuration: '8s' }}>
                                         <span className="font-display text-sm font-bold text-slate-700">{day.date}</span>
@@ -233,7 +273,6 @@ export default function Timeline() {
                                     <span className="text-xs font-semibold text-slate-400">{filteredEvents.length} events</span>
                                 </div>
 
-                                {/* Events */}
                                 <div className="pl-2">
                                     {filteredEvents.map((event, i) => (
                                         <TimelineEvent key={event.id} event={event} index={i} />
@@ -244,9 +283,8 @@ export default function Timeline() {
                     })}
                 </div>
 
-                {/* Summary Sidebar */}
                 <div className="space-y-5">
-                    {/* Event Type Stats */}
+
                     <div className="glass rounded-2xl shadow-float p-5">
                         <h3 className="font-display text-base font-bold text-slate-800 mb-4">Activity Summary</h3>
                         <div className="space-y-3">
@@ -275,7 +313,6 @@ export default function Timeline() {
                         </div>
                     </div>
 
-                    {/* Category Distribution */}
                     <div className="glass rounded-2xl shadow-float p-5">
                         <h3 className="font-display text-base font-bold text-slate-800 mb-4">By Category</h3>
                         <div className="space-y-2">
@@ -295,7 +332,6 @@ export default function Timeline() {
                         </div>
                     </div>
 
-                    {/* Recent Resolutions */}
                     <div className="glass rounded-2xl shadow-float p-5">
                         <h3 className="font-display text-base font-bold text-slate-800 mb-4">Recent Wins 🎉</h3>
                         <div className="space-y-3">

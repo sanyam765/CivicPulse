@@ -1,48 +1,30 @@
 import React, { useState, useEffect } from 'react'
 import { CheckCircle, MapPin, Calendar } from 'lucide-react'
+import { getAllComplaints } from '../../services/complaintService'
+
+const getImageUrl = (imagePath) => {
+  if (!imagePath) return 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=400'
+  if (imagePath.startsWith('http')) return imagePath
+  return `http://localhost:5000/${imagePath.replace(/\\/g, '/')}`
+}
 
 function RecentResolutions() {
   const [recentComplaints, setRecentComplaints] = useState([])
 
   useEffect(() => {
-    const complaints = JSON.parse(localStorage.getItem('complaints') || '[]')
-    const resolved = complaints
-      .filter(c => c.status === 'Resolved')
-      .slice(-3)
-      .reverse()
-    setRecentComplaints(resolved)
+    const fetchResolved = async () => {
+      const response = await getAllComplaints()
+      const complaints = response.data.complaints
+      const resolved = complaints
+        .filter(c => c.status === 'Resolved')
+        .slice(0, 3)
+      setRecentComplaints(resolved)
+    }
+
+    fetchResolved()
   }, [])
 
-  const mockResolutions = [
-    {
-      complaintId: 'CMP-DEMO001',
-      complaintType: 'Pothole',
-      description: 'Large pothole on Main Street repaired',
-      imagePreview: 'https://images.unsplash.com/photo-1599687351724-dfa3c4ff81e1?w=400',
-      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      resolvedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
-    },
-    {
-      complaintId: 'CMP-DEMO002',
-      complaintType: 'Streetlight',
-      description: 'Non-functional streetlight replaced',
-      imagePreview: 'https://images.unsplash.com/photo-1513828583688-c52646db42da?w=400',
-      createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-      resolvedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
-    },
-    {
-      complaintId: 'CMP-DEMO003',
-      complaintType: 'Garbage',
-      description: 'Garbage collection schedule restored',
-      imagePreview: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=400',
-      createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-      resolvedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
-    }
-  ]
-
-  const displayComplaints = recentComplaints.length > 0 ? recentComplaints : mockResolutions
-
-  if (displayComplaints.length === 0) return null
+  if (recentComplaints.length === 0) return null
 
   return (
     <section className="py-20 bg-white">
@@ -57,15 +39,15 @@ function RecentResolutions() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {displayComplaints.map((complaint, index) => (
-            <div 
+          {recentComplaints.map((complaint, index) => (
+            <div
               key={complaint.complaintId}
               className="card overflow-hidden group animate-slide-up"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <div className="relative h-48 overflow-hidden">
-                <img 
-                  src={complaint.imagePreview} 
+                <img
+                  src={getImageUrl(complaint.image)}
                   alt={complaint.complaintType}
                   className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
                 />
@@ -89,7 +71,7 @@ function RecentResolutions() {
                 <h3 className="text-xl font-bold text-gray-800 mb-2">
                   {complaint.complaintType}
                 </h3>
-                
+
                 <p className="text-gray-600 text-sm mb-4 line-clamp-2">
                   {complaint.description}
                 </p>

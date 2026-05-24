@@ -55,17 +55,17 @@ function FeaturesShowcase() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {features.map((feature, index) => (
-            <div 
+            <div
               key={index}
               className="group relative"
             >
               <div className="card p-8 h-full hover:shadow-glow transition-all duration-300">
                 <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity duration-300`}></div>
-                
+
                 <div className={`relative inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br ${feature.color} text-white rounded-xl shadow-lg mb-6 transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`}>
                   {feature.icon}
                 </div>
-                
+
                 <h3 className="relative text-xl font-bold text-gray-800 mb-3">
                   {feature.title}
                 </h3>

@@ -8,7 +8,7 @@ function CTASection() {
       {/* Decorative Elements */}
       <div className="absolute top-0 left-0 w-64 h-64 bg-white/10 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/10 rounded-full translate-x-1/2 translate-y-1/2"></div>
-      
+
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
@@ -19,9 +19,9 @@ function CTASection() {
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Ready to Make a Difference?
           </h2>
-          
+
           <p className="text-xl text-white/90 mb-10 leading-relaxed">
-            Join thousands of citizens making our city better. Submit your first 
+            Join thousands of citizens making our city better. Submit your first
             complaint today and experience the power of civic engagement.
           </p>
 
@@ -34,7 +34,7 @@ function CTASection() {
               <span>Submit Complaint Now</span>
               <ArrowRight className="w-5 h-5" />
             </Link>
-            
+
             <Link
               to="/track"
               className="px-8 py-4 bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 rounded-xl font-bold text-lg hover:bg-white/30 transform hover:scale-105 transition-all duration-300"

@@ -17,14 +17,29 @@ export default function CitizenNavbar() {
     }, [])
 
     const navLinks = [
-        { label: 'Solutions', path: '/' },
-        { label: 'How it Works', path: '#how-it-works' },
-        { label: 'Pricing', path: '#pricing' },
+        { label: 'Home',          path: '/citizen' },
+        { label: 'How it Works',  path: '/citizen', anchor: 'how-it-works' },
+        { label: 'Report Issue',  path: '/citizen/submit' },
+        { label: 'Track Issue',   path: '/citizen/track' },
+        { label: 'My Complaints', path: '/citizen/my-complaints' },
     ]
 
-    const isActive = (path) => {
-        if (path === '/citizen') return location.pathname === '/citizen' || location.pathname === '/'
-        return location.pathname === path
+    const isActive = (link) => {
+        if (link.anchor) return false
+        return location.pathname === link.path
+    }
+
+    const handleNavClick = (e, link) => {
+        if (!link.anchor) return
+        e.preventDefault()
+        setMenuOpen(false)
+        const scroll = () => document.getElementById(link.anchor)?.scrollIntoView({ behavior: 'smooth' })
+        if (location.pathname === '/citizen') {
+            scroll()
+        } else {
+            navigate('/citizen')
+            setTimeout(scroll, 350)
+        }
     }
 
     const handleLogout = () => {
@@ -55,12 +70,14 @@ export default function CitizenNavbar() {
                 <div className="hidden md:flex items-center gap-1">
                     {navLinks.map((link) => (
                         <Link
-                            key={link.path}
-                            to={link.path}
-                            className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 ${isActive(link.path)
-                                ? 'bg-emerald-500/10 text-emerald-700 shadow-sm'
-                                : 'text-slate-500 hover:text-slate-700 hover:bg-white/40'
-                                }`}
+                            key={link.label}
+                            to={link.anchor ? '/citizen' : link.path}
+                            onClick={(e) => handleNavClick(e, link)}
+                            className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 ${
+                                isActive(link)
+                                    ? 'bg-emerald-500/10 text-emerald-700 shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-700 hover:bg-white/40'
+                            }`}
                         >
                             {link.label}
                         </Link>
@@ -69,18 +86,6 @@ export default function CitizenNavbar() {
 
                 {/* Right Side */}
                 <div className="hidden md:flex items-center gap-4">
-                    {/* Admin Switch */}
-                    <button
-                        onClick={switchToAdmin}
-                        className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-emerald-600 hover:bg-emerald-50/50 transition-all group"
-                        title="Switch to Admin Panel"
-                    >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="group-hover:rotate-180 transition-transform duration-500">
-                            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-                            <circle cx="12" cy="12" r="3" />
-                        </svg>
-                        Admin
-                    </button>
 
                     {/* User Profile */}
                     <div className="relative">
@@ -150,13 +155,14 @@ export default function CitizenNavbar() {
                     <div className="flex flex-col gap-1">
                         {navLinks.map((link) => (
                             <Link
-                                key={link.path}
-                                to={link.path}
-                                onClick={() => setMenuOpen(false)}
-                                className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all ${isActive(link.path)
-                                    ? 'bg-emerald-500/10 text-emerald-700'
-                                    : 'text-slate-500 hover:bg-white/40'
-                                    }`}
+                                key={link.label}
+                                to={link.anchor ? '/citizen' : link.path}
+                                onClick={(e) => handleNavClick(e, link)}
+                                className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+                                    isActive(link)
+                                        ? 'bg-emerald-500/10 text-emerald-700'
+                                        : 'text-slate-500 hover:bg-white/40'
+                                }`}
                             >
                                 {link.label}
                             </Link>

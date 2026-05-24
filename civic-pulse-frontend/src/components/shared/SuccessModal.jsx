@@ -1,69 +1,64 @@
 import React from 'react'
-import { CheckCircle, X, Copy } from 'lucide-react'
+import { CheckCircle, Copy, X } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
-function SuccessModal({ isOpen, onClose, complaintId }) {
-  if (!isOpen) return null
+function SuccessModal({ isOpen, complaintId, onClose }) {
+  const navigate = useNavigate()
 
-  const copyToClipboard = () => {
+  if (isOpen === false || !complaintId) return null
+
+  const handleCopy = () => {
     navigator.clipboard.writeText(complaintId)
-    alert('Complaint ID copied to clipboard!')
+    alert('Complaint ID copied!')
+  }
+
+  const handleTrackComplaint = () => {
+    // Navigate to track page with complaint ID in URL hash for auto-search
+    navigator.clipboard.writeText(complaintId)
+    navigate(`/citizen/track#${complaintId}`)
+    onClose()
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-8 relative animate-scale-in">
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-        >
-          <X className="w-6 h-6" />
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 relative">
+        
+        <button onClick={onClose} className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full">
+          <X className="w-5 h-5 text-gray-500" />
         </button>
 
-        {/* Success Icon */}
-        <div className="flex justify-center mb-6">
-          <div className="bg-green-100 rounded-full p-4">
-            <CheckCircle className="w-16 h-16 text-green-600" />
+        <div className="text-center mb-6">
+          <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <CheckCircle className="w-12 h-12 text-emerald-500" />
           </div>
+          <h2 className="text-2xl font-black text-gray-900 mb-2">Complaint Submitted!</h2>
+          <p className="text-gray-600">Your complaint has been registered</p>
         </div>
 
-        {/* Title */}
-        <h2 className="text-2xl font-bold text-gray-800 text-center mb-2">
-          Complaint Submitted Successfully!
-        </h2>
-        <p className="text-gray-600 text-center mb-6">
-          Your complaint has been registered. Save your tracking ID below.
-        </p>
-
-        {/* Complaint ID Box */}
-        <div className="bg-primary-50 border-2 border-primary-200 rounded-lg p-4 mb-6">
-          <p className="text-sm text-gray-600 mb-2 text-center">Your Complaint ID</p>
-          <div className="flex items-center justify-between bg-white rounded-lg p-3">
-            <code className="text-lg font-bold text-primary-700">{complaintId}</code>
-            <button
-              onClick={copyToClipboard}
-              className="ml-4 p-2 bg-primary-100 text-primary-700 rounded hover:bg-primary-200"
-              title="Copy to clipboard"
-            >
-              <Copy className="w-5 h-5" />
+        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-6">
+          <p className="text-sm text-emerald-700 font-bold mb-2">Your Complaint ID</p>
+          <div className="flex items-center justify-between">
+            <p className="text-xl font-black text-emerald-900">{complaintId}</p>
+            <button onClick={handleCopy} className="p-2 hover:bg-emerald-100 rounded-lg">
+              <Copy className="w-5 h-5 text-emerald-600" />
             </button>
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex space-x-3">
+        <div className="bg-gray-50 rounded-xl p-4 mb-6">
+          <p className="text-sm text-gray-600">💡 ID copied to clipboard. Paste it in the Track page.</p>
+        </div>
+
+        <div className="space-y-3">
           <button
-            onClick={() => {
-              onClose()
-              window.location.href = '/track'
-            }}
-            className="flex-1 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-semibold"
+            onClick={handleTrackComplaint}
+            className="w-full py-3 bg-emerald-500 text-white font-bold rounded-xl hover:bg-emerald-600"
           >
             Track Complaint
           </button>
           <button
             onClick={onClose}
-            className="flex-1 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-semibold"
+            className="w-full py-3 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200"
           >
             Submit Another
           </button>

@@ -28,7 +28,7 @@ const navItems = [
 export default function Sidebar({ collapsed, setCollapsed }) {
   const location = useLocation()
   const navigate = useNavigate()
-  const { switchToCitizen, logout, user } = useRole()
+  const { logout, user } = useRole()
 
   const isActive = (path) => path === '/' ? location.pathname === '/' : location.pathname.startsWith(path)
   const handleLogout = () => { logout(); navigate('/login') }
@@ -111,29 +111,12 @@ export default function Sidebar({ collapsed, setCollapsed }) {
           )
         })}
 
-        {/* New Report CTA */}
-        <button onClick={() => navigate('/submit')} title={collapsed ? 'New Report' : undefined}
-          className={`group relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl mt-3 text-white font-semibold transition-all hover:-translate-y-0.5 overflow-hidden ${collapsed ? 'justify-center' : ''}`}
-          style={{ background: 'linear-gradient(135deg, #10b981, #14b8a6)', boxShadow: '0 4px 16px rgba(16,185,129,0.25)' }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-            className="flex-shrink-0 group-hover:rotate-90 transition-transform duration-300">
-            <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="16" /><line x1="8" y1="12" x2="16" y2="12" />
-          </svg>
-          {!collapsed && <span className="text-sm z-10 relative whitespace-nowrap">New Report</span>}
-        </button>
+       
       </nav>
 
       {/* BOTTOM */}
       <div className="px-3 py-3 border-t border-white/20 space-y-0.5">
         {!collapsed && <p className="px-3 mb-2 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Account</p>}
-
-        <button onClick={switchToCitizen} title={collapsed ? 'Citizen View' : undefined}
-          className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 text-slate-400 hover:bg-emerald-50/60 hover:text-emerald-600 text-sm font-semibold ${collapsed ? 'justify-center' : ''}`}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 group-hover:text-emerald-500 transition-colors">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
-          </svg>
-          {!collapsed && 'Citizen View'}
-        </button>
 
         <button onClick={() => navigate('/settings')} title={collapsed ? 'Settings' : undefined}
           className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 text-slate-400 hover:bg-white/60 hover:text-slate-600 text-sm font-semibold ${collapsed ? 'justify-center' : ''}`}>

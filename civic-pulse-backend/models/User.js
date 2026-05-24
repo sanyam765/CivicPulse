@@ -1,25 +1,67 @@
 const mongoose = require('mongoose')
 
-const userSchema = new mongoose.Schema( {
-    name :{
-        type : String ,
-        required : true
-    },
-    email :{
-        type : String ,
-        required : true,
-        unique : true
-    },
-       password :{
-        type : String ,
-        required : true
-    },
-    role :{
-        type : String,
-        enum : ["citizen" ,"admin"],
-        unique : true
-    }
-    
-}, {timestamps : true})
+const userSchema = new mongoose.Schema({
 
-module.exports = mongoose.model("User", userSchema);
+  name: {
+    type: String,
+    required: [true, 'Name is required'],
+    trim: true,
+    minlength: [2, 'Name must be at least 2 characters'],
+    maxlength: [50, 'Name cannot exceed 50 characters']
+  },
+
+  email: {
+    type: String,
+    required: [true, 'Email is required'],
+    unique: true,
+    lowercase: true,
+    trim: true,
+    match: [
+      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+      'Please provide a valid email address'
+    ]
+  },
+
+  password: {
+    type: String,
+    required: [true, 'Password is required'],
+    minlength: [6, 'Password must be at least 6 characters'],
+    select: false  // Don't return password in queries by default
+  },
+
+  role: {
+    type: String,
+    enum: {
+      values: ['citizen', 'admin'],
+      message: 'Role must be either citizen or admin'
+    },
+    default: 'citizen'
+  },
+
+  department: {
+    type: String,
+    required: function() {
+      return this.role === 'admin'
+    }
+  },
+
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+
+  resetPasswordToken: {
+    type: String,
+    select: false
+  },
+
+  resetPasswordExpire: {
+    type: Date,
+    select: false
+  }
+
+}, {
+  timestamps: true
+})
+
+module.exports = mongoose.model('User', userSchema)

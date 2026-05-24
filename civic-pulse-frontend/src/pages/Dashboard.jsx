@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react'
 import TopBar from '../components/shared/TopBar'
 import { useRole } from '../context/RoleContext'
+import { getAllComplaints } from '../services/complaintService'
 
-// 3D Tilt Card Component
 function TiltCard({ children, className = '', delay = 0 }) {
     const cardRef = useRef(null)
     const [transform, setTransform] = useState('')
@@ -50,7 +50,6 @@ function TiltCard({ children, className = '', delay = 0 }) {
     )
 }
 
-// Stat Card Component
 function StatCard({ icon, label, value, change, changeType, color, delay }) {
     const [displayValue, setDisplayValue] = useState(0)
     const numericValue = parseInt(value.replace(/[^0-9]/g, ''))
@@ -106,19 +105,18 @@ function StatCard({ icon, label, value, change, changeType, color, delay }) {
         <TiltCard delay={delay}>
             <div className="glass rounded-2xl p-6 shadow-float hover:shadow-float-hover transition-all duration-500 group levitate cursor-default"
                 style={{ animationDelay: `${delay}ms` }}>
-                {/* Icon */}
+
                 <div className="flex items-start justify-between mb-4">
                     <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${cs.iconBg} flex items-center justify-center shadow-lg ${cs.iconShadow} group-hover:scale-110 transition-transform duration-300`}>
                         <span className="text-white">{icon}</span>
                     </div>
-                    {/* Status dot */}
+
                     <div className="flex items-center gap-1.5">
                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-glow" />
                         <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Live</span>
                     </div>
                 </div>
 
-                {/* Value */}
                 <div className="mb-1">
                     <span className="font-display text-3xl font-extrabold text-slate-800">
                         {value.includes('%') ? `${displayValue}%` :
@@ -128,10 +126,8 @@ function StatCard({ icon, label, value, change, changeType, color, delay }) {
                     </span>
                 </div>
 
-                {/* Label */}
                 <p className="text-sm font-medium text-slate-500 mb-3">{label}</p>
 
-                {/* Change indicator */}
                 <div className="flex items-center gap-2">
                     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold ${changeType === 'up' ? cs.changeUp : 'text-red-600 bg-red-50'
                         }`}>
@@ -149,7 +145,6 @@ function StatCard({ icon, label, value, change, changeType, color, delay }) {
                     <span className="text-[11px] text-slate-400 font-medium">vs last week</span>
                 </div>
 
-                {/* Bottom shimmer line */}
                 <div className="absolute bottom-0 left-4 right-4 h-[2px] rounded-full overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity">
                     <div className="h-full shimmer-overlay" style={{ background: `linear-gradient(90deg, transparent, ${color === 'emerald' ? '#10b981' : color === 'teal' ? '#14b8a6' : color === 'cyan' ? '#06b6d4' : '#f59e0b'}40, transparent)` }} />
                 </div>
@@ -158,7 +153,6 @@ function StatCard({ icon, label, value, change, changeType, color, delay }) {
     )
 }
 
-// Activity Item Component
 function ActivityItem({ type, title, location, time, status, delay }) {
     const statusColors = {
         pending: 'bg-amber-100 text-amber-700 border-amber-200',
@@ -181,12 +175,11 @@ function ActivityItem({ type, title, location, time, status, delay }) {
             className="flex items-center gap-4 p-4 rounded-xl hover:bg-white/60 transition-all duration-300 group cursor-pointer spring-hover"
             style={{ animationDelay: `${delay}ms` }}
         >
-            {/* Avatar */}
+
             <div className="w-10 h-10 rounded-xl bg-white/80 shadow-sm flex items-center justify-center text-lg group-hover:scale-110 transition-transform group-hover:shadow-md">
                 {typeIcons[type] || '📋'}
             </div>
 
-            {/* Content */}
             <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-slate-700 truncate group-hover:text-emerald-700 transition-colors">
                     {title}
@@ -200,29 +193,30 @@ function ActivityItem({ type, title, location, time, status, delay }) {
                 </p>
             </div>
 
-            {/* Status Badge */}
             <div className={`px-2.5 py-1 rounded-full text-[11px] font-bold border ${statusColors[status]} badge-float`}>
                 {status.replace('-', ' ').replace(/^\w/, c => c.toUpperCase())}
             </div>
 
-            {/* Time */}
             <span className="text-xs text-slate-400 font-medium whitespace-nowrap">{time}</span>
         </div>
     )
 }
 
-// Mini Map Component
-function MiniMap() {
-    const pins = [
-        { x: 25, y: 30, type: 'urgent', delay: 0 },
-        { x: 55, y: 20, type: 'pending', delay: 200 },
-        { x: 75, y: 45, type: 'resolved', delay: 400 },
-        { x: 40, y: 60, type: 'in-progress', delay: 600 },
-        { x: 60, y: 70, type: 'pending', delay: 800 },
-        { x: 30, y: 50, type: 'resolved', delay: 1000 },
-        { x: 85, y: 25, type: 'urgent', delay: 1200 },
-        { x: 15, y: 75, type: 'in-progress', delay: 1400 },
-    ]
+function MiniMap({ complaints }) {
+    const pins = complaints.slice(0, 16).map((complaint, index) => ({
+        x: Number.isFinite(complaint.location?.longitude)
+            ? Math.min(90, Math.max(10, ((complaint.location.longitude + 180) / 360) * 100))
+            : 15 + (index * 11) % 70,
+        y: Number.isFinite(complaint.location?.latitude)
+            ? Math.min(90, Math.max(10, ((90 - complaint.location.latitude) / 180) * 100))
+            : 15 + (index * 7) % 70,
+        type: complaint.status === 'Resolved'
+            ? 'resolved'
+            : complaint.status === 'In Progress'
+                ? 'in-progress'
+                : 'pending',
+        delay: index * 120,
+    }))
 
     const pinColors = {
         urgent: '#ef4444',
@@ -233,7 +227,7 @@ function MiniMap() {
 
     return (
         <div className="relative w-full h-full rounded-xl overflow-hidden bg-gradient-to-br from-emerald-50 to-teal-50">
-            {/* Map grid */}
+
             <div className="absolute inset-0 opacity-10"
                 style={{
                     backgroundImage: 'linear-gradient(rgba(16,185,129,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.3) 1px, transparent 1px)',
@@ -241,7 +235,6 @@ function MiniMap() {
                 }}
             />
 
-            {/* Simulated roads */}
             <svg className="absolute inset-0 w-full h-full opacity-20" viewBox="0 0 100 100" preserveAspectRatio="none">
                 <path d="M0 30 L100 30" stroke="#94a3b8" strokeWidth="0.5" fill="none" />
                 <path d="M0 60 L100 60" stroke="#94a3b8" strokeWidth="0.5" fill="none" />
@@ -251,12 +244,10 @@ function MiniMap() {
                 <path d="M20 80 Q60 40 90 70" stroke="#94a3b8" strokeWidth="0.3" fill="none" />
             </svg>
 
-            {/* Area labels */}
             <span className="absolute text-[9px] font-bold text-slate-300 uppercase tracking-wider" style={{ top: '15%', left: '10%' }}>Downtown</span>
             <span className="absolute text-[9px] font-bold text-slate-300 uppercase tracking-wider" style={{ top: '45%', left: '55%' }}>Midtown</span>
             <span className="absolute text-[9px] font-bold text-slate-300 uppercase tracking-wider" style={{ top: '78%', left: '25%' }}>Suburbs</span>
 
-            {/* Anti-gravity Pins */}
             {pins.map((pin, i) => (
                 <div
                     key={i}
@@ -267,12 +258,12 @@ function MiniMap() {
                         animationDelay: `${pin.delay}ms`,
                     }}
                 >
-                    {/* Pin shadow */}
+
                     <div
                         className="absolute w-4 h-1.5 rounded-full bg-black/10 -bottom-3 left-1/2 -translate-x-1/2 map-pin-shadow"
                         style={{ animationDelay: `${pin.delay}ms` }}
                     />
-                    {/* Pin body */}
+
                     <div
                         className="relative map-pin group-hover:scale-125 transition-transform"
                         style={{ animationDelay: `${pin.delay}ms` }}
@@ -284,7 +275,7 @@ function MiniMap() {
                                 boxShadow: `0 0 10px ${pinColors[pin.type]}60`,
                             }}
                         />
-                        {/* Pulse ring */}
+
                         {pin.type === 'urgent' && (
                             <div
                                 className="absolute inset-0 rounded-full"
@@ -299,7 +290,6 @@ function MiniMap() {
                 </div>
             ))}
 
-            {/* Legend */}
             <div className="absolute bottom-3 right-3 glass rounded-lg px-3 py-2 shadow-sm">
                 <div className="flex items-center gap-3 text-[9px] font-semibold text-slate-500">
                     {Object.entries(pinColors).map(([key, color]) => (
@@ -314,7 +304,6 @@ function MiniMap() {
     )
 }
 
-// Progress Ring Component
 function ProgressRing({ value, size = 80, strokeWidth = 6, color = '#10b981' }) {
     const radius = (size - strokeWidth) / 2
     const circumference = radius * 2 * Math.PI
@@ -362,7 +351,6 @@ function ProgressRing({ value, size = 80, strokeWidth = 6, color = '#10b981' }) 
     )
 }
 
-// Category Bar Component
 function CategoryBar({ label, value, maxValue, color, icon }) {
     const [width, setWidth] = useState(0)
 
@@ -396,9 +384,48 @@ function CategoryBar({ label, value, maxValue, color, icon }) {
     )
 }
 
+const formatRelativeTime = (dateValue) => {
+    if (!dateValue) return 'Just now'
+
+    const timestamp = new Date(dateValue).getTime()
+    if (!Number.isFinite(timestamp)) return 'Just now'
+
+    const diffMinutes = Math.max(0, Math.floor((Date.now() - timestamp) / (1000 * 60)))
+    if (diffMinutes < 1) return 'Just now'
+    if (diffMinutes < 60) return `${diffMinutes}m ago`
+
+    const diffHours = Math.floor(diffMinutes / 60)
+    if (diffHours < 24) return `${diffHours}h ago`
+
+    const diffDays = Math.floor(diffHours / 24)
+    return `${diffDays}d ago`
+}
+
+const buildRecentActivity = (complaints) => {
+    // Use the newest meaningful timestamp for each complaint so the feed reflects the latest live action.
+    return complaints
+        .map((complaint) => {
+            const latestActivityAt = complaint.resolvedAt || complaint.updatedAt || complaint.createdAt
+            const statusKey = (complaint.status || 'Pending').toLowerCase().replace(/\s+/g, '-')
+
+            return {
+                type: complaint.complaintType,
+                title: complaint.complaintType,
+                location: complaint.location?.address || 'Auto-detected location',
+                time: formatRelativeTime(latestActivityAt),
+                status: statusKey,
+                sortTime: new Date(latestActivityAt || complaint.createdAt || 0).getTime()
+            }
+        })
+        .sort((a, b) => b.sortTime - a.sortTime)
+        .slice(0, 6)
+}
+
 export default function Dashboard() {
     const [time, setTime] = useState(new Date())
     const [allComplaints, setAllComplaints] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState('')
     const { user } = useRole()
 
     useEffect(() => {
@@ -407,15 +434,55 @@ export default function Dashboard() {
     }, [])
 
     useEffect(() => {
-        const stored = JSON.parse(localStorage.getItem('complaints') || '[]')
-        setAllComplaints(stored.reverse())
+        const fetchComplaints = async () => {
+            try {
+                const response = await getAllComplaints()
+                setAllComplaints(response.data.complaints)
+            } catch (err) {
+                setError(err.message || 'Failed to load complaints')
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchComplaints()
+        const interval = setInterval(fetchComplaints, 15000)
+        return () => clearInterval(interval)
     }, [])
+
+    const pendingCount = allComplaints.filter(c => c.status === 'Pending').length
+    const inProgressCount = allComplaints.filter(c => c.status === 'In Progress').length
+    const resolvedCount = allComplaints.filter(c => c.status === 'Resolved').length
+    const resolvedTodayCount = allComplaints.filter(c => {
+        if (!c.resolvedAt) return false
+        return new Date(c.resolvedAt).toDateString() === new Date().toDateString()
+    }).length
+
+    const resolvedComplaints = allComplaints.filter(c => c.resolvedAt)
+    const avgResolutionHours = resolvedComplaints.length
+        ? Math.round(
+            resolvedComplaints.reduce((acc, complaint) => {
+                return acc + (new Date(complaint.resolvedAt) - new Date(complaint.createdAt))
+            }, 0) / resolvedComplaints.length / (1000 * 60 * 60)
+        )
+        : 0
+
+    const resolutionRate = allComplaints.length
+        ? Math.round((resolvedCount / allComplaints.length) * 100)
+        : 0
+
+    const categoryCounts = allComplaints.reduce((acc, complaint) => {
+        const key = complaint.complaintType || 'other'
+        acc[key] = (acc[key] || 0) + 1
+        return acc
+    }, {})
+    const categoryMax = Math.max(...Object.values(categoryCounts), 1)
 
     const stats = [
         {
             icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /></svg>,
             label: 'Total Complaints',
-            value: (2847 + allComplaints.length).toString(),
+            value: allComplaints.length.toString(),
             change: '+12.5%',
             changeType: 'up',
             color: 'emerald',
@@ -423,7 +490,7 @@ export default function Dashboard() {
         {
             icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>,
             label: 'Pending Review',
-            value: (342 + allComplaints.filter(c => c.status === 'pending').length).toString(),
+            value: pendingCount.toString(),
             change: '+8.2%',
             changeType: 'down',
             color: 'amber',
@@ -431,7 +498,7 @@ export default function Dashboard() {
         {
             icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>,
             label: 'Resolved Today',
-            value: '156',
+            value: resolvedTodayCount.toString(),
             change: '+24.1%',
             changeType: 'up',
             color: 'teal',
@@ -439,32 +506,14 @@ export default function Dashboard() {
         {
             icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 20V10" /><path d="M18 20V4" /><path d="M6 20v-4" /></svg>,
             label: 'Avg Resolution',
-            value: '18h',
+            value: `${avgResolutionHours}h`,
             change: '-15.3%',
             changeType: 'up',
             color: 'cyan',
         },
     ]
 
-    const mockActivity = [
-        { type: 'pothole', title: 'Large pothole on Main Street', location: 'Main St & 5th Ave', time: '2m ago', status: 'urgent' },
-        { type: 'streetlight', title: 'Broken streetlight in park area', location: 'Central Park, North', time: '15m ago', status: 'pending' },
-        { type: 'garbage', title: 'Overflowing garbage bins', location: 'Market Street', time: '32m ago', status: 'in-progress' },
-        { type: 'water', title: 'Water leakage at intersection', location: 'Oak & Pine Junction', time: '1h ago', status: 'in-progress' },
-        { type: 'drainage', title: 'Blocked storm drain', location: 'Riverside Dr', time: '2h ago', status: 'resolved' },
-        { type: 'road', title: 'Damaged speed bump', location: 'School Zone, 3rd Ave', time: '3h ago', status: 'pending' },
-    ]
-
-    const recentActivity = [
-        ...allComplaints.slice(0, 5).map(c => ({
-            type: c.type,
-            title: c.title,
-            location: c.location || 'Auto-detected',
-            time: 'Just now',
-            status: c.status
-        })),
-        ...mockActivity
-    ].slice(0, 6)
+    const recentActivity = buildRecentActivity(allComplaints)
 
     return (
         <div className="animate-fade-in">
@@ -473,16 +522,26 @@ export default function Dashboard() {
                 subtitle={`Good ${time.getHours() < 12 ? 'morning' : time.getHours() < 18 ? 'afternoon' : 'evening'}, ${user?.name || 'Admin'} • ${time.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}`}
             />
 
-            {/* Floating Stat Cards */}
+            {loading && (
+                <div className="mb-6 glass rounded-2xl p-4 text-sm text-slate-500">
+                    Loading live complaints...
+                </div>
+            )}
+
+            {error && !loading && (
+                <div className="mb-6 glass rounded-2xl p-4 text-sm text-red-600">
+                    {error}
+                </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
                 {stats.map((stat, i) => (
                     <StatCard key={i} {...stat} delay={i * 150} />
                 ))}
             </div>
 
-            {/* Main Content Grid */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
-                {/* Activity Feed */}
+
                 <div className="xl:col-span-2 glass rounded-2xl shadow-float p-6">
                     <div className="flex items-center justify-between mb-6">
                         <div>
@@ -506,7 +565,6 @@ export default function Dashboard() {
                     </button>
                 </div>
 
-                {/* Map Overview */}
                 <div className="glass rounded-2xl shadow-float p-6">
                     <div className="flex items-center justify-between mb-4">
                         <div>
@@ -518,64 +576,61 @@ export default function Dashboard() {
                         </button>
                     </div>
                     <div className="h-[280px]">
-                        <MiniMap />
+                        <MiniMap complaints={allComplaints} />
                     </div>
                 </div>
             </div>
 
-            {/* Bottom Row */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                {/* Resolution Progress */}
+
                 <div className="glass rounded-2xl shadow-float p-6">
                     <h2 className="font-display text-lg font-bold text-slate-800 mb-1">Resolution Rate</h2>
                     <p className="text-xs text-slate-400 mb-6">Monthly target: 95%</p>
 
                     <div className="flex items-center justify-center mb-6">
-                        <ProgressRing value={87} size={120} strokeWidth={8} />
+                        <ProgressRing value={resolutionRate} size={120} strokeWidth={8} />
                     </div>
 
                     <div className="grid grid-cols-3 gap-3 text-center">
                         <div className="p-3 rounded-xl bg-white/50">
-                            <p className="font-display font-extrabold text-emerald-600 text-lg">156</p>
+                            <p className="font-display font-extrabold text-emerald-600 text-lg">{resolvedCount}</p>
                             <p className="text-[10px] font-semibold text-slate-400 uppercase">Resolved</p>
                         </div>
                         <div className="p-3 rounded-xl bg-white/50">
-                            <p className="font-display font-extrabold text-amber-600 text-lg">23</p>
+                            <p className="font-display font-extrabold text-amber-600 text-lg">{pendingCount}</p>
                             <p className="text-[10px] font-semibold text-slate-400 uppercase">Pending</p>
                         </div>
                         <div className="p-3 rounded-xl bg-white/50">
-                            <p className="font-display font-extrabold text-blue-600 text-lg">12</p>
+                            <p className="font-display font-extrabold text-blue-600 text-lg">{inProgressCount}</p>
                             <p className="text-[10px] font-semibold text-slate-400 uppercase">In Progress</p>
                         </div>
                     </div>
                 </div>
 
-                {/* Categories Breakdown */}
                 <div className="glass rounded-2xl shadow-float p-6">
                     <h2 className="font-display text-lg font-bold text-slate-800 mb-1">By Category</h2>
                     <p className="text-xs text-slate-400 mb-6">Complaint distribution</p>
 
                     <div className="space-y-5">
-                        <CategoryBar label="Potholes" value={89} maxValue={100} color="#10b981" icon="🕳️" />
-                        <CategoryBar label="Streetlights" value={67} maxValue={100} color="#14b8a6" icon="💡" />
-                        <CategoryBar label="Garbage" value={54} maxValue={100} color="#06b6d4" icon="🗑️" />
-                        <CategoryBar label="Water" value={43} maxValue={100} color="#f59e0b" icon="💧" />
-                        <CategoryBar label="Drainage" value={31} maxValue={100} color="#8b5cf6" icon="🌊" />
-                        <CategoryBar label="Roads" value={28} maxValue={100} color="#ec4899" icon="🛣️" />
+                        <CategoryBar label="Potholes" value={categoryCounts.pothole || 0} maxValue={categoryMax} color="#10b981" icon="🕳️" />
+                        <CategoryBar label="Streetlights" value={categoryCounts.streetlight || 0} maxValue={categoryMax} color="#14b8a6" icon="💡" />
+                        <CategoryBar label="Garbage" value={categoryCounts.garbage || 0} maxValue={categoryMax} color="#06b6d4" icon="🗑️" />
+                        <CategoryBar label="Water" value={categoryCounts.water || 0} maxValue={categoryMax} color="#f59e0b" icon="💧" />
+                        <CategoryBar label="Drainage" value={categoryCounts.drainage || 0} maxValue={categoryMax} color="#8b5cf6" icon="🌊" />
+                        <CategoryBar label="Roads" value={categoryCounts.road || 0} maxValue={categoryMax} color="#ec4899" icon="🛣️" />
                     </div>
                 </div>
 
-                {/* Quick Actions */}
                 <div className="glass rounded-2xl shadow-float p-6">
                     <h2 className="font-display text-lg font-bold text-slate-800 mb-1">Quick Actions</h2>
                     <p className="text-xs text-slate-400 mb-6">Common operations</p>
 
                     <div className="space-y-3">
                         {[
-                            { label: 'Review Pending', icon: '📋', desc: '23 complaints waiting', color: 'from-amber-400 to-orange-400' },
-                            { label: 'Assign Crews', icon: '👷', desc: '8 unassigned tasks', color: 'from-blue-400 to-indigo-400' },
-                            { label: 'Send Updates', icon: '📨', desc: '12 pending notices', color: 'from-emerald-400 to-teal-400' },
-                            { label: 'Generate Report', icon: '📊', desc: 'Weekly summary ready', color: 'from-purple-400 to-pink-400' },
+                            { label: 'Review Pending', icon: '📋', desc: `${pendingCount} complaints waiting`, color: 'from-amber-400 to-orange-400' },
+                            { label: 'Assign Crews', icon: '👷', desc: `${inProgressCount} active assignments`, color: 'from-blue-400 to-indigo-400' },
+                            { label: 'Send Updates', icon: '📨', desc: `${allComplaints.length} citizens to notify`, color: 'from-emerald-400 to-teal-400' },
+                            { label: 'Generate Report', icon: '📊', desc: `${resolvedTodayCount} resolved today`, color: 'from-purple-400 to-pink-400' },
                         ].map((action, i) => (
                             <button
                                 key={i}

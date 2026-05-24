@@ -1,38 +1,58 @@
 import React, { useState, useEffect } from 'react'
 import { TrendingUp, Clock, CheckCircle2, AlertCircle } from 'lucide-react'
+import { getAllComplaints } from '../../services/complaintService'
+
+const getResolutionHours = (complaint) => {
+  if (!complaint?.createdAt || !complaint?.resolvedAt) return null
+
+  const created = new Date(complaint.createdAt)
+  const resolved = new Date(complaint.resolvedAt)
+  const diffMs = resolved - created
+
+  return Number.isFinite(diffMs) && diffMs >= 0 ? diffMs / (1000 * 60 * 60) : null
+}
+
+const buildLiveStats = (complaints) => {
+  const resolved = complaints.filter(c => c.status === 'Resolved').length
+  const pending = complaints.filter(c => c.status === 'Pending').length
+  const inProgress = complaints.filter(c => c.status === 'In Progress').length
+
+  const resolvedHours = complaints
+    .map(getResolutionHours)
+    .filter(hours => hours !== null)
+
+  const avgTime = resolvedHours.length > 0
+    ? Math.round(resolvedHours.reduce((sum, hours) => sum + hours, 0) / resolvedHours.length)
+    : 0
+
+  return {
+    total: complaints.length,
+    resolved,
+    pending,
+    inProgress,
+    avgTime
+  }
+}
 
 function LiveStats() {
   const [stats, setStats] = useState({
     total: 0,
     resolved: 0,
     pending: 0,
+    inProgress: 0,
     avgTime: 0
   })
 
   useEffect(() => {
-    const complaints = JSON.parse(localStorage.getItem('complaints') || '[]')
-    const resolved = complaints.filter(c => c.status === 'Resolved').length
-    const pending = complaints.filter(c => c.status === 'Pending').length
-    
-    let current = 0
-    const target = complaints.length + 1234
-    const increment = Math.ceil(target / 50)
-    
-    const timer = setInterval(() => {
-      current += increment
-      if (current >= target) {
-        current = target
-        clearInterval(timer)
-      }
-      setStats({
-        total: current,
-        resolved: Math.floor(current * 0.72) + resolved,
-        pending: Math.floor(current * 0.15) + pending,
-        avgTime: 24
-      })
-    }, 30)
+    const fetchStats = async () => {
+      const response = await getAllComplaints()
+      const complaints = response.data.complaints
 
-    return () => clearInterval(timer)
+      // This card is now driven by the same complaint feed as the rest of the dashboard.
+      setStats(buildLiveStats(complaints))
+    }
+
+    fetchStats()
   }, [])
 
   const statCards = [
@@ -55,7 +75,7 @@ function LiveStats() {
     {
       icon: <AlertCircle className="w-6 h-6" />,
       label: "In Progress",
-      value: stats.pending.toLocaleString(),
+      value: stats.inProgress.toLocaleString(),
       color: "from-orange-500 to-orange-600",
       bg: "bg-orange-50",
       textColor: "text-orange-700"
@@ -85,7 +105,7 @@ function LiveStats() {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {statCards.map((stat, index) => (
-            <div 
+            <div
               key={index}
               className="card p-6 text-center animate-slide-up"
               style={{ animationDelay: `${index * 0.1}s` }}

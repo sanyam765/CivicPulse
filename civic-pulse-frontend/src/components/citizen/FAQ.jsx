@@ -49,7 +49,7 @@ function FAQ() {
 
           <div className="space-y-4">
             {faqs.map((faq, index) => (
-              <div 
+              <div
                 key={index}
                 className="card overflow-hidden"
               >
@@ -60,14 +60,14 @@ function FAQ() {
                   <span className="text-lg font-semibold text-gray-800 pr-8">
                     {faq.question}
                   </span>
-                  <ChevronDown 
+                  <ChevronDown
                     className={`w-6 h-6 text-primary-600 flex-shrink-0 transform transition-transform duration-300 ${
                       openIndex === index ? 'rotate-180' : ''
                     }`}
                   />
                 </button>
-                
-                <div 
+
+                <div
                   className={`overflow-hidden transition-all duration-300 ${
                     openIndex === index ? 'max-h-96' : 'max-h-0'
                   }`}
