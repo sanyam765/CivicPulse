@@ -143,7 +143,7 @@ function CitizenHome() {
                 🏙️ RESIDENT ISSUE DASHBOARD
               </span>
             </div>
-            <h1 className="text-6xl font-black text-gray-900 mb-4">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-gray-900 mb-4">
               A Smarter Way to
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-600">

@@ -11,24 +11,7 @@ const api = axios.create({
   timeout: 10000
 })
 
-// ... rest of your interceptors
 
-// WHY CREATE AN INSTANCE?
-// Instead of writing full URL every time:
-// axios.post('http://localhost:5000/api/auth/login', ...)
-//
-// We can write:
-// api.post('/auth/login', ...)
-//
-// Benefits:
-// 1. Don't repeat base URL
-// 2. Easy to change URL (dev vs production)
-// 3. Centralized configuration
-
-// ───────────────────────────────────────────────────────────
-// REQUEST INTERCEPTOR
-// Runs BEFORE every request is sent
-// ───────────────────────────────────────────────────────────
 api.interceptors.request.use(
   (config) => {
     

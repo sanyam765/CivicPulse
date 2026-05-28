@@ -5,7 +5,8 @@ import { getAllComplaints } from '../../services/complaintService'
 const getImageUrl = (imagePath) => {
   if (!imagePath) return 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=400'
   if (imagePath.startsWith('http')) return imagePath
-  return `http://localhost:5000/${imagePath.replace(/\\/g, '/')}`
+  const backendUrl = import.meta.env.REACT_APP_API_URL?.replace('/api', '') || 'https://civic-pulse-backend-production.up.railway.app'
+  return `${backendUrl}/${imagePath.replace(/\\/g, '/')}`
 }
 
 function RecentResolutions() {

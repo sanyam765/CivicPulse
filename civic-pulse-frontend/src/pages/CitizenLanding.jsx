@@ -357,7 +357,7 @@ export default function CitizenLanding() {
 
             <section className="py-24 px-6 bg-slate-50/50">
                 <div className="max-w-7xl mx-auto text-center">
-                    <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">Features That Keep Your City Moving</h2>
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-4">Features That Keep Your City Moving</h2>
                     <p className="text-slate-500 mb-16 max-w-2xl mx-auto">
                         Everything your administration needs to respond faster, manage better, and communicate clearer with citizens.
                     </p>
@@ -377,7 +377,7 @@ export default function CitizenLanding() {
 
             <section id="how-it-works" className="py-24 px-6 overflow-hidden">
                 <div className="max-w-7xl mx-auto text-center relative">
-                    <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">A Streamlined 3-Step Process</h2>
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-4">A Streamlined 3-Step Process</h2>
                     <div className="grid md:grid-cols-3 gap-12 mt-20 relative">
 
                         <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 hidden md:block -translate-y-12" />
@@ -425,7 +425,7 @@ export default function CitizenLanding() {
                         </div>
                     </div>
                     <div className="order-1 lg:order-2">
-                        <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">Empower Your Administrators</h2>
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-6">Empower Your Administrators</h2>
                         <p className="text-lg text-slate-500 mb-8 leading-relaxed">
                             Our powerful admin backend gives city managers the data they need to optimize urban services. Identify hot-spots, track department performance, and generate legislative reports with a single click.
                         </p>
@@ -443,10 +443,6 @@ export default function CitizenLanding() {
                                 </li>
                             ))}
                         </ul>
-                        <button className="px-8 py-4 bg-white text-slate-900 border border-slate-200 rounded-xl font-bold hover:bg-slate-50 transition-all flex items-center gap-3 group">
-                            Request Demo
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="group-hover:translate-x-1 transition-transform"><path d="M5 12h14m-7-7 7 7-7 7" /></svg>
-                        </button>
                     </div>
                 </div>
             </section>
@@ -498,9 +494,6 @@ export default function CitizenLanding() {
                         <div className="flex flex-wrap items-center justify-center gap-4">
                             <Link to="/citizen/submit" className="px-10 py-5 bg-white text-emerald-700 rounded-xl font-bold text-lg hover:scale-105 transition-all shadow-2xl">
                                 Get Started Today
-                            </Link>
-                            <Link to="/citizen/track" className="px-10 py-5 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl font-bold text-lg hover:bg-white/20 transition-all">
-                                View Demo
                             </Link>
                         </div>
                     </div>

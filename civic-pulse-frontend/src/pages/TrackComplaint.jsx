@@ -5,7 +5,8 @@ import { Search, MapPin, Calendar, AlertCircle } from 'lucide-react'
 const getImageUrl = (imagePath) => {
   if (!imagePath) return null
   if (imagePath.startsWith('http')) return imagePath
-  return `http://localhost:5000/${imagePath.replace(/\\/g, '/')}`
+  const backendUrl = import.meta.env.REACT_APP_API_URL?.replace('/api', '') || 'https://civic-pulse-backend-production.up.railway.app'
+  return `${backendUrl}/${imagePath.replace(/\\/g, '/')}`
 }
 
 function TrackComplaint() {

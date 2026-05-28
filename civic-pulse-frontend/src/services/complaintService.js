@@ -36,19 +36,7 @@ export const createComplaint = async (complaintData) => {
   }
 }
 
-// WHY FormData?
-// FormData is used when uploading files
-// JSON can't send files, only FormData can
-//
-// Without FormData:
-//   JSON: { image: <File object> }  ❌ Can't send
-//
-// With FormData:
-//   FormData: image = <actual file binary>  ✅ Works!
 
-// ───────────────────────────────────────────────────────────
-// GET ALL COMPLAINTS
-// ───────────────────────────────────────────────────────────
 export const getAllComplaints = async () => {
   try {
     const response = await api.get('/complaints')
@@ -69,9 +57,7 @@ export const getMyComplaints = async () => {
   }
 }
 
-// ───────────────────────────────────────────────────────────
-// GET SINGLE COMPLAINT BY ID
-// ───────────────────────────────────────────────────────────
+
 export const getComplaintById = async (complaintId) => {
   try {
     const response = await api.get(`/complaints/${complaintId}`)
@@ -82,9 +68,7 @@ export const getComplaintById = async (complaintId) => {
   }
 }
 
-// ───────────────────────────────────────────────────────────
-// UPDATE COMPLAINT STATUS (Admin only)
-// ───────────────────────────────────────────────────────────
+
 export const updateComplaint = async (complaintId, updateData) => {
   try {
     const response = await api.put(`/complaints/${complaintId}`, updateData)
@@ -95,9 +79,7 @@ export const updateComplaint = async (complaintId, updateData) => {
   }
 }
 
-// ───────────────────────────────────────────────────────────
-// DELETE COMPLAINT (Admin only)
-// ───────────────────────────────────────────────────────────
+
 export const deleteComplaint = async (complaintId) => {
   try {
     const response = await api.delete(`/complaints/${complaintId}`)

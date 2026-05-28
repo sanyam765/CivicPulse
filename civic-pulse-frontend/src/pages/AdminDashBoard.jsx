@@ -245,23 +245,23 @@ function AdminDashboard() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-              <table className="w-full">
+            <div className="bg-white rounded-2xl shadow-sm overflow-x-auto">
+              <table className="w-full min-w-max">
                 <thead className="bg-gray-50 border-b">
                   <tr>
-                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-900">ID</th>
-                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-900">Type</th>
-                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-900">Description</th>
-                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-900">Date</th>
-                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-900">Status</th>
-                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-900">Actions</th>
+                    <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-900">ID</th>
+                    <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-900">Type</th>
+                    <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-900">Description</th>
+                    <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-900">Date</th>
+                    <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-900">Status</th>
+                    <th className="px-3 sm:px-6 py-4 text-left text-xs sm:text-sm font-bold text-gray-900">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredComplaints.map((complaint) => (
                     <tr key={complaint._id} className="border-b hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 text-sm text-gray-600 font-mono">
-                        {complaint.complaintId.substring(0, 15)}...
+                      <td className="px-3 sm:px-6 py-4 text-xs sm:text-sm text-gray-600 font-mono">
+                        {complaint.complaintId.substring(0, 12)}...
                       </td>
 
                       <td className="px-6 py-4">
@@ -349,7 +349,7 @@ function AdminDashboard() {
             {/* Image */}
             {selectedComplaint.image && (
               <img
-                src={`http://localhost:5000/${selectedComplaint.image.replace(/\\/g, '/')}`}
+                src={selectedComplaint.image.startsWith('http') ? selectedComplaint.image : `${import.meta.env.REACT_APP_API_URL?.replace('/api', '') || 'https://civic-pulse-backend-production.up.railway.app'}/${selectedComplaint.image.replace(/\\/g, '/')}`}
                 alt="Complaint"
                 className="w-full h-64 object-cover rounded-xl mb-6"
               />

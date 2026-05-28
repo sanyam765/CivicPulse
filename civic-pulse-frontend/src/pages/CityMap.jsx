@@ -319,7 +319,7 @@ function CityMap() {
 
                       {complaint.image && (
                         <img
-                          src={`http://localhost:5000/${complaint.image.replace(/\\/g, '/')}`}
+                          src={complaint.image.startsWith('http') ? complaint.image : `${import.meta.env.REACT_APP_API_URL?.replace('/api', '') || 'https://civic-pulse-backend-production.up.railway.app'}/${complaint.image.replace(/\\/g, '/')}`}
                           alt="Complaint"
                           className="w-full h-24 object-cover rounded mt-2"
                         />

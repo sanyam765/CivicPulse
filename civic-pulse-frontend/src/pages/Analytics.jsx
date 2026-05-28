@@ -273,7 +273,7 @@ export default function Analytics() {
         return weeklyData
     }
 
-    // Calculate category distribution
+
     const getCategoryData = () => {
         const typeCount = {}
         complaints.forEach(c => {

@@ -154,9 +154,8 @@ const getImageUrl = (imagePath) => {
 
   if (imagePath.startsWith('http')) return imagePath
 
-
-
-  return `http://localhost:5000/${imagePath.replace(/\\/g, '/')}`
+  const backendUrl = import.meta.env.REACT_APP_API_URL?.replace('/api', '') || 'https://civic-pulse-backend-production.up.railway.app'
+  return `${backendUrl}/${imagePath.replace(/\\/g, '/')}`
 }
 
 
@@ -385,7 +384,7 @@ export default function CitizenTrack() {
               <h3 className="font-display text-xl font-bold text-slate-800 mb-2">Connection Error</h3>
 
               <p className="text-slate-500 font-medium">{error}</p>
-              <p className="text-xs text-slate-400 mt-2">Make sure your backend server is running on port 5000</p>
+              <p className="text-xs text-slate-400 mt-2">Make sure your backend server is running on port 8080</p>
             </div>
           )}
 
